@@ -1,6 +1,7 @@
 <?php
 
 require_once LAYERS_DIR . '/Friends/friends.php';
+require_once LAYERS_DIR . '/User/user.php';
 
 class MainFriendsModel extends MainModel
 {
@@ -10,6 +11,7 @@ class MainFriendsModel extends MainModel
     {
         parent::__construct();
         $this->_Friends = new Friends();
+        $this->_User = new User();
     }
 
     public function action_invite()
@@ -33,7 +35,14 @@ class MainFriendsModel extends MainModel
     public function action_get_list()
     {
         $this->_set_user_get();
-        $this->Result = $this->_Friends->get_list();
+        $Res_data = array();
+        foreach ($this->_Friends->get_list() as $Friend_data)
+        {
+            $Friend_data['name'] = $this->_User->get_name_by_id($Friend_data['user_id']);
+            $Friend_data['photo'] = null;
+            $Res_data[] = $Friend_data;
+        }
+        $this->Result = array('data' => $Res_data);
     }
     
     public function action_delete()

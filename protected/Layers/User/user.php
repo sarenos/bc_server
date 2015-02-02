@@ -50,6 +50,14 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function get_name_by_id($user_id)
+    {
+        $this->Fields['user_id']->set($user_id);
+        $this->load_by_field('user_id');
+        return $this->Fields['name']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function get_info()
     {
         $res = $this->_checkEmail();

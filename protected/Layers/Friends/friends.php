@@ -118,13 +118,10 @@ class Friends extends EntityWithDB
 
     public function get_list()
     {
-        return array(
-                'data'          =>
-                        array_merge(
-                            $this->_load_by_user('user_to', 'user_from'),
-                            $this->_load_by_user('user_from', 'user_to')
-                        )
-        );
+        return array_merge(
+                    $this->_load_by_user('user_to', 'user_from'),
+                    $this->_load_by_user('user_from', 'user_to')
+                );
     }
     /////////////////////////////////////////////////////////////////////////////
 
@@ -137,7 +134,7 @@ class Friends extends EntityWithDB
         foreach ($this->DBHandler->db->get_all_data() as $record)
         {
             $res_rec[] = array(
-                            'user'   => $record[$field_res],
+                            'user_id'   => $record[$field_res],
                             'status'    => $record['status']
                         );
         }
