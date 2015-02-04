@@ -21,6 +21,8 @@ class User extends EntityWithDB
         $result['birth_date']       = new FieldDate();
         $result['city']             = new FieldString();
         $result['photo']            = new FieldString();
+        $result['new_friends']      = new FieldInt();
+        $result['new_messages']     = new FieldInt();
         
         $result['user_account']->set_max_length(50);
         $result['name']->set_max_length(20);
@@ -125,6 +127,60 @@ class User extends EntityWithDB
                     'statusMessage' => 'Проверьте правильность email адреса!');
         }
         return $result;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function inc_count_friends($user_id)
+    {
+        $count_friends = $this->_get_count_new_friends($user_id);
+        $this->Fields['new_friends']->set(++$count_friends);
+        $this->DBHandler->update();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function dec_count_friends($user_id)
+    {
+        $count_friends = $this->_get_count_new_friends($user_id);
+        if ($count_friends > 0)
+        {
+            $this->Fields['new_friends']->set(--$count_friends);
+            $this->DBHandler->update();
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_count_new_friends($user_id)
+    {
+        $this->Fields['user_id']->set($user_id);
+        $this->load_by_field('user_id');
+        return $this->Fields['new_friends']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function inc_count_messages($user_id)
+    {
+        $count_messages = $this->_get_count_new_messages($user_id);
+        $this->Fields['new_messages']->set(++$count_messages);
+        $this->DBHandler->update();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function dec_count_messages($user_id)
+    {
+        $count_messages = $this->_get_count_new_messages($user_id);
+        if ($count_messages > 0)
+        {
+            $this->Fields['new_messages']->set(--$count_messages);
+            $this->DBHandler->update();
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_count_new_messages($user_id)
+    {
+        $this->Fields['user_id']->set($user_id);
+        $this->load_by_field('user_id');
+        return $this->Fields['new_messages']->get();
     }
     /////////////////////////////////////////////////////////////////////////////
 }
