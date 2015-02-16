@@ -216,9 +216,9 @@ class Friends extends EntityWithDB
                     || ($this->_get_status() < 0 && $this->_get_status() * -1 == $this->_get_positive_status())
                 ))
         {
-            return $this->_get_msg_status_friend($this->_get_status() >= 0 ? 1 : 0);
+            return $this->_get_msg_status_friend($this->_get_status());
         }
-        return $this->_get_msg_status_friend(-1);
+        return $this->_get_msg_status_friend(0);
     }
     /////////////////////////////////////////////////////////////////////////////
 
