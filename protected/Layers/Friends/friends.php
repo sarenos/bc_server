@@ -142,10 +142,14 @@ class Friends extends EntityWithDB
         $res_rec = array();
         foreach ($this->DBHandler->db->get_all_data() as $record)
         {
-            $res_rec[] = array(
-                            'user_id'   => $record[$field_res],
-                            'status'    => $record['status']
-                        );
+            if (($record['status'] == -1 && $field_query != 'user_from')
+                    || $record['status'] >= 0)
+            {
+                $res_rec[] = array(
+                                'user_id'   => $record[$field_res],
+                                'status'    => $record['status']
+                            );
+            }
         }
         return $res_rec;
     }
@@ -166,12 +170,22 @@ class Friends extends EntityWithDB
 
     public function status_friend()
     {
-        if ($this->_is_friends($this->_user_to, $this->_user_from)
-            || $this->_is_friends($this->_user_from, $this->_user_to))
+        if ($this->_is_invited_or_friends())
         {
             return $this->_get_msg_status_friend($this->_get_status());
         }
         return $this->_get_msg_status_friend(-2);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    private function _is_invited_or_friends()
+    {
+        return (($this->_is_friends($this->_user_to, $this->_user_from)
+                    || $this->_is_friends($this->_user_from, $this->_user_to))
+                && $this->_get_status() >= 0)
+            ||
+                ($this->_is_friends($this->_user_from, $this->_user_to)
+                && $this->_get_status() < 0);
     }
     /////////////////////////////////////////////////////////////////////////////
 
