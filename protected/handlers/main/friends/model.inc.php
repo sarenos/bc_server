@@ -55,6 +55,12 @@ class MainFriendsModel extends MainModel
         $this->_set_users_post();
         $this->Result = $this->_Friends->status_friend();
     }
+    
+    public function action_was_invitation()
+    {
+        $this->_set_users_post();
+        $this->Result = $this->_Friends->was_invitation();
+    }
 
     private function _set_users_post()
     {

@@ -178,6 +178,14 @@ class Friends extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
 
+    public function was_invitation()
+    {
+        return array('result' =>
+                        ($this->_is_friends($this->_user_to, $this->_user_from)
+                            && $this->_get_status() < 0));
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
     private function _is_invited_or_friends()
     {
         return (($this->_is_friends($this->_user_to, $this->_user_from)
