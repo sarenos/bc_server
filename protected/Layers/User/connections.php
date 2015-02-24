@@ -34,6 +34,13 @@ class Connections extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function set_one_user($user)
+    {
+        $this->_user1 = $user;
+        return $this;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     private function _get_user1($user1, $user2)
     {
         if ($user1 < $user2)
@@ -61,6 +68,28 @@ class Connections extends EntityWithDB
             $this->_add();
         }
         return $this->Fields['id']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_list_by_one_user()
+    {
+        return array_merge(
+                $this->_get_list_by_every_user('user1', 'user2'),
+                $this->_get_list_by_every_user('user2', 'user1'));
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_list_by_every_user($user_name, $user_find)
+    {
+        $this->DBHandler->db->exec_query(
+                "SELECT * FROM `bc_connections` WHERE `".$user_name."` = '".$this->_user1."'"
+        );
+        $res = array();
+        foreach ($this->DBHandler->db->get_all_data() as $user)
+        {
+            $res[] = $user[$user_find];
+        }
+        return $res;
     }
     /////////////////////////////////////////////////////////////////////////////
     

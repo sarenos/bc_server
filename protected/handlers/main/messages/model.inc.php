@@ -60,13 +60,15 @@ class MainMessagesModel extends MainModel
                         ));
     }
     
-    /*public function action_all_friends()
+    public function action_list_users()
     {
-        $this->_set_user_get();
-        $this->Result = $this->_Friends->get_list();
+        $this->_Connections->set_one_user((float)@$_POST['user']);
+        $this->Result = array('users' =>
+                            $this->_Connections->get_list_by_one_user()
+                        );
     }
     
-    public function action_new_messages()
+    /*public function action_new_messages()
     {
         $this->_set_users_post();
         $this->Result = $this->_Friends->delete();
