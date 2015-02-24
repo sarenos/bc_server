@@ -87,7 +87,7 @@ class Connections extends EntityWithDB
         $res = array();
         foreach ($this->DBHandler->db->get_all_data() as $user)
         {
-            $res[] = $user[$user_find];
+            $res[] = ['id' => $user[$user_find]];
         }
         return $res;
     }
