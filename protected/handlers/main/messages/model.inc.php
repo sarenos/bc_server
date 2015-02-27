@@ -51,10 +51,9 @@ class MainMessagesModel extends MainModel
 
     public function action_one_friend()
     {
-        $this->_Connections->set_users((float)@$_POST['user'], (float)@$_POST['friend']);
+        $this->_Connections->set_users((float)@$_GET['user'], (float)@$_GET['friend']);
         $this->Result = array('data' =>
                             $this->_Messages
-                                    ->set_data($_POST)
                                     ->get_list_with_one_friend(
                                             $this->_Connections->get_id_by_users()
                         ));
@@ -62,7 +61,7 @@ class MainMessagesModel extends MainModel
     
     public function action_list_users()
     {
-        $this->_Connections->set_one_user((float)@$_POST['user']);
+        $this->_Connections->set_one_user((float)@$_GET['user']);
         $Res_data = array();
         foreach ($this->_Connections->get_list_by_one_user() as $Message_data)
         {
