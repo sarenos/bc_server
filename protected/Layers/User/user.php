@@ -67,7 +67,8 @@ class User extends EntityWithDB
         {
             if (!$this->_is_exist())
             {
-                $this->_add();
+                //$this->_add();
+                return array('data' => null);
             }
             
             $this->DBHandler->db->exec_query("SELECT * FROM bc_users_info WHERE user_account LIKE '".$this->_user_account."'");
@@ -93,6 +94,15 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function create($Data)
+    {
+        $this->set_user_account((string)@$Data['user_account']);
+        $this->_add();
+        $this->update_data($Data);
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function update_data($data)
     {
         $this->_user_account = $data['user_account'];
@@ -112,6 +122,19 @@ class User extends EntityWithDB
         $this->Fields['city']->set(trim((string)@$data['city']));
         $this->Fields['dt_create']->now();
         $this->DBHandler->update();
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function delete()
+    {
+        if (!$this->_is_exist())
+        {
+            return array(
+                    'statusCode'    => 4,
+                    'statusMessage' => 'Пользователя с таким аккаунтом нет в системе!');
+        }
+        $this->DBHandler->delete_by_field('user_account');
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////

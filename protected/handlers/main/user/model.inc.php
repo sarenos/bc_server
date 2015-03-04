@@ -20,9 +20,20 @@ class MainUserModel extends MainModel
         $this->Result = $this->_User->get_info();
     }
     
+    public function action_create()
+    {
+        $this->Result = $this->_User->create($_POST);
+    }
+    
     public function action_update()
     {
         $this->Result = $this->_User->update_data($_POST);
+    }
+    
+    public function action_delete()
+    {
+        $this->_User->set_user_account((string)@$_POST['user_account']);
+        $this->Result = $this->_User->delete();
     }
     
     public function action_default()
