@@ -99,7 +99,7 @@ class User extends EntityWithDB
         $this->set_user_account((string)@$Data['user_account']);
         $this->_add();
         $this->update_data($Data);
-        return true;
+        return array('id' => (int)@$this->Fields['user_id']->get());
     }
     /////////////////////////////////////////////////////////////////////////////
     
