@@ -84,6 +84,7 @@ class Messages extends EntityWithDB
             $message['user'] = $this->_is_user_message($user_msg_status, $mes_data['status']);
             $message['read'] = $this->_was_message_read($mes_data['status']);
             $message['message'] = $mes_data['message'];
+            $message['date'] = $mes_data['dt_create'];
             $all_messages[] = $message;
         }
         return $all_messages;
@@ -108,9 +109,9 @@ class Messages extends EntityWithDB
         }
         if ($user_msg_status == $status)
         {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
     /////////////////////////////////////////////////////////////////////////////
 
