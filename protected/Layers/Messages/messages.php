@@ -109,9 +109,9 @@ class Messages extends EntityWithDB
         }
         if ($user_msg_status == $status)
         {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
     /////////////////////////////////////////////////////////////////////////////
 

@@ -52,6 +52,7 @@ class MainMessagesModel extends MainModel
     public function action_one_friend()
     {
         $this->_Connections->set_users((float)@$_GET['user'], (float)@$_GET['friend']);
+        $this->_Messages->set_data($_GET);
         $this->Result = array('data' =>
                             $this->_Messages
                                     ->get_list_with_one_friend(
