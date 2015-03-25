@@ -74,18 +74,21 @@ class Messages extends EntityWithDB
     public function get_list_with_one_friend($connection_id)
     {
         $this->DBHandler->db->exec_query(
-                "SELECT * FROM `bc_messages` WHERE `connection_id` = '$connection_id'"
+                "SELECT * FROM `bc_messages` WHERE `connection_id` = '$connection_id' ORDER BY `dt_create`"
         );
         $user_msg_status = $this->_get_user_message_status();
         $all_messages = array();
+        $id = 1;
         foreach ($this->DBHandler->db->get_all_data() as $mes_data)
         {
             $message = array();
+            $message['id'] = $id;
             $message['user'] = $this->_is_user_message($user_msg_status, $mes_data['status']);
             $message['read'] = $this->_was_message_read($mes_data['status']);
             $message['message'] = $mes_data['message'];
             $message['date'] = $mes_data['dt_create'];
             $all_messages[] = $message;
+            ++$id;
         }
         return $all_messages;
     }
