@@ -41,13 +41,18 @@ CREATE TABLE IF NOT EXISTS `bc_connections` (
 --
 
 CREATE TABLE IF NOT EXISTS `bc_friends` (
-  `user1` bigint(30) unsigned NOT NULL,
-  `user2` bigint(30) unsigned NOT NULL,
+  `user_from` varchar(50) NOT NULL,
+  `user_to` varchar(50) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `dt_create` datetime NOT NULL,
-  `dt_status` datetime DEFAULT NULL,
-  PRIMARY KEY (`user1`,`user2`)
+  `dt_status` datetime DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Indexes for table `bc_friends`
+--
+ALTER TABLE `bc_friends`
+ ADD PRIMARY KEY (`user_from`,`user_to`);
 
 -- --------------------------------------------------------
 
