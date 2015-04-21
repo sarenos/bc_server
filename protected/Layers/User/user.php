@@ -68,6 +68,22 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function get_photo_by_id($user_id)
+    {
+        $this->Fields['user_id']->set($user_id);
+        $this->load_by_field('user_id');
+        return $this->Fields['photo']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_photo_by_account($user_account)
+    {
+        $this->Fields['user_account']->set($user_account);
+        $this->load_by_field('user_account');
+        return $this->Fields['photo']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function get_info()
     {
         $res = $this->_checkEmail();

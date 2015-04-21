@@ -67,6 +67,7 @@ class MainMessagesModel extends MainModel
         foreach ($this->_Connections->get_list_by_one_user() as $Message_data)
         {
             $Message_data['name'] = $this->_User->get_name_by_id($Message_data['id']);
+            $Message_data['photo'] = $this->_User->get_photo_by_id($Message_data['id']);
             $Res_data[] = $Message_data;
         }
         $this->Result = array('data' => $Res_data);
