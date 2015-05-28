@@ -246,4 +246,39 @@ class User extends EntityWithDB
         return $this->Fields['new_messages']->get();
     }
     /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_users_by_filters($sex, $age)
+    {
+        $filter = $this->_get_filter_for_age($age);
+        if (isset($sex))
+        {
+            if (!empty($filter))
+            {
+                $filter .= ' AND ';
+            }
+            $filter .= "sex = '".$sex."'";
+        }
+        if (empty($filter))
+        {
+            $filter = '1';
+        }
+        $this->DBHandler->db->exec_query("SELECT user_id, name, age, sex, photo FROM bc_users_info WHERE " . $filter);
+        return array('data' => $this->DBHandler->db->get_all_data());
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_filter_for_age($age)
+    {
+        if (isset($age))
+        {
+            $ages = explode('-', $age);
+            if (count($ages) == 1)
+            {
+                return 'age' . $age;
+            }
+            return 'age >= ' . $ages[0] . ' AND age <= ' . $ages[1];
+        }
+        return '';
+    }
+    /////////////////////////////////////////////////////////////////////////////
 }

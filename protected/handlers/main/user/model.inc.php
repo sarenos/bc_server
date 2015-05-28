@@ -36,6 +36,11 @@ class MainUserModel extends MainModel
         $this->Result = $this->_User->delete();
     }
     
+    public function action_filter()
+    {
+        $this->Result = $this->_User->get_users_by_filters(@$_POST['sex'], @$_POST['age']);
+    }
+    
     public function action_default()
     {
     }
