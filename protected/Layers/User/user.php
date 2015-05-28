@@ -247,16 +247,16 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_users_by_filters($sex, $age)
+    public function get_users_by_filters($Data)
     {
-        $filter = $this->_get_filter_for_age($age);
-        if (isset($sex))
+        $filter = $this->_get_filter_for_age(@$Data['minAge'], @$Data['maxAge']);
+        if (isset($Data['sex']))
         {
             if (!empty($filter))
             {
                 $filter .= ' AND ';
             }
-            $filter .= "sex = '".$sex."'";
+            $filter .= "sex = '".@$Data['sex']."'";
         }
         if (empty($filter))
         {
@@ -267,16 +267,11 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _get_filter_for_age($age)
+    private function _get_filter_for_age($minAge, $maxAge)
     {
-        if (isset($age))
+        if (isset($minAge) && isset($maxAge))
         {
-            $ages = explode('-', $age);
-            if (count($ages) == 1)
-            {
-                return 'age' . $age;
-            }
-            return 'age >= ' . $ages[0] . ' AND age <= ' . $ages[1];
+            return 'age >= ' . $minAge . ' AND age <= ' . $maxAge;
         }
         return '';
     }

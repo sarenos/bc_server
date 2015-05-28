@@ -38,7 +38,7 @@ class MainUserModel extends MainModel
     
     public function action_filter()
     {
-        $this->Result = $this->_User->get_users_by_filters(@$_POST['sex'], @$_POST['age']);
+        $this->Result = $this->_User->get_users_by_filters($_GET);
     }
     
     public function action_default()
