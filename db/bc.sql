@@ -1,13 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.10.1deb1
+-- version 4.2.3deb1.precise~ppa.1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 04, 2015 at 12:36 PM
--- Server version: 5.5.29
--- PHP Version: 5.5.19-1+deb.sury.org~precise+1
+-- Generation Time: Jun 15, 2015 at 03:52 PM
+-- Server version: 5.5.29-0ubuntu0.12.04.2
+-- PHP Version: 5.5.23-1+deb.sury.org~precise+2
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -27,12 +27,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `bc_connections` (
-  `id` bigint(45) unsigned NOT NULL AUTO_INCREMENT,
+`id` bigint(45) unsigned NOT NULL,
   `user1` bigint(30) unsigned NOT NULL,
-  `user2` bigint(30) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user1` (`user1`,`user2`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+  `user2` bigint(30) unsigned NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -48,12 +46,6 @@ CREATE TABLE IF NOT EXISTS `bc_friends` (
   `dt_status` datetime DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Indexes for table `bc_friends`
---
-ALTER TABLE `bc_friends`
- ADD PRIMARY KEY (`user_from`,`user_to`);
-
 -- --------------------------------------------------------
 
 --
@@ -61,14 +53,12 @@ ALTER TABLE `bc_friends`
 --
 
 CREATE TABLE IF NOT EXISTS `bc_locations` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`id` int(10) unsigned NOT NULL,
   `latitude` double DEFAULT NULL,
   `longitude` double DEFAULT NULL,
   `date_crt` datetime NOT NULL,
-  `user_account` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_account` (`user_account`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+  `user_account` varchar(255) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 -- --------------------------------------------------------
 
@@ -77,14 +67,12 @@ CREATE TABLE IF NOT EXISTS `bc_locations` (
 --
 
 CREATE TABLE IF NOT EXISTS `bc_messages` (
-  `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
+`id` bigint(50) unsigned NOT NULL,
   `connection_id` bigint(45) unsigned NOT NULL,
   `status` tinyint(1) NOT NULL,
   `message` text NOT NULL,
-  `dt_create` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `connection_id` (`connection_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+  `dt_create` datetime NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 -- --------------------------------------------------------
 
@@ -93,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `bc_messages` (
 --
 
 CREATE TABLE IF NOT EXISTS `bc_users_info` (
-  `user_id` bigint(30) unsigned NOT NULL AUTO_INCREMENT,
+`user_id` bigint(30) unsigned NOT NULL,
   `user_account` varchar(50) NOT NULL,
   `name` varchar(20) NOT NULL,
   `age` tinyint(1) unsigned NOT NULL,
@@ -107,9 +95,9 @@ CREATE TABLE IF NOT EXISTS `bc_users_info` (
   `photo` varchar(255) NOT NULL,
   `new_friends` tinyint(1) unsigned DEFAULT '0',
   `new_messages` smallint(2) unsigned DEFAULT '0',
-  PRIMARY KEY (`user_id`),
-  UNIQUE KEY `user_account` (`user_account`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+  `radius` double unsigned NOT NULL DEFAULT '1',
+  `filter` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -118,15 +106,82 @@ CREATE TABLE IF NOT EXISTS `bc_users_info` (
 --
 
 CREATE TABLE IF NOT EXISTS `bc_user_loc_archive` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `user_account` varchar(255) NOT NULL,
   `latitude` double NOT NULL,
   `longitude` double NOT NULL,
-  `date_crt` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_account`)
+  `date_crt` datetime NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1670 ;
 
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `bc_connections`
+--
+ALTER TABLE `bc_connections`
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `user1` (`user1`,`user2`);
+
+--
+-- Indexes for table `bc_friends`
+--
+ALTER TABLE `bc_friends`
+ ADD PRIMARY KEY (`user_from`,`user_to`);
+
+--
+-- Indexes for table `bc_locations`
+--
+ALTER TABLE `bc_locations`
+ ADD PRIMARY KEY (`id`), ADD KEY `user_account` (`user_account`);
+
+--
+-- Indexes for table `bc_messages`
+--
+ALTER TABLE `bc_messages`
+ ADD PRIMARY KEY (`id`), ADD KEY `connection_id` (`connection_id`);
+
+--
+-- Indexes for table `bc_users_info`
+--
+ALTER TABLE `bc_users_info`
+ ADD PRIMARY KEY (`user_id`), ADD UNIQUE KEY `user_account` (`user_account`);
+
+--
+-- Indexes for table `bc_user_loc_archive`
+--
+ALTER TABLE `bc_user_loc_archive`
+ ADD PRIMARY KEY (`id`), ADD KEY `user_id` (`user_account`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `bc_connections`
+--
+ALTER TABLE `bc_connections`
+MODIFY `id` bigint(45) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+--
+-- AUTO_INCREMENT for table `bc_locations`
+--
+ALTER TABLE `bc_locations`
+MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
+--
+-- AUTO_INCREMENT for table `bc_messages`
+--
+ALTER TABLE `bc_messages`
+MODIFY `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=14;
+--
+-- AUTO_INCREMENT for table `bc_users_info`
+--
+ALTER TABLE `bc_users_info`
+MODIFY `user_id` bigint(30) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
+--
+-- AUTO_INCREMENT for table `bc_user_loc_archive`
+--
+ALTER TABLE `bc_user_loc_archive`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1670;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
