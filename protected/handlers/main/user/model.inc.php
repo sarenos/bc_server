@@ -38,6 +38,7 @@ class MainUserModel extends MainModel
     
     public function action_filter()
     {
+        $this->_User->save_filter($_GET);
         $this->Result = $this->_User->get_users_by_filters($_GET);
     }
     

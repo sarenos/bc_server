@@ -23,6 +23,8 @@ class User extends EntityWithDB
         $result['photo']            = new FieldString();
         $result['new_friends']      = new FieldInt();
         $result['new_messages']     = new FieldInt();
+        $result['radius']           = new FieldFloat();
+        $result['filter']           = new FieldString();
         
         $result['user_account']->set_max_length(50);
         $result['name']->set_max_length(20);
@@ -32,6 +34,7 @@ class User extends EntityWithDB
         $result['vk_id']->set_max_length(255);
         $result['city']->set_max_length(100);
         $result['photo']->set_max_length(255);
+        $result['filter']->set_max_length(255);
         
         return $result;
     }
@@ -267,6 +270,14 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function get_user_s_radius($user_account)
+    {
+        $this->Fields['user_account']->set($user_account);
+        $this->load_by_field('user_account');
+        return (float)@$this->Fields['radius']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     private function _get_filter_for_age($minAge, $maxAge)
     {
         if (isset($minAge) && isset($maxAge))
@@ -274,6 +285,48 @@ class User extends EntityWithDB
             return 'age >= ' . $minAge . ' AND age <= ' . $maxAge;
         }
         return '';
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _set_user_by_account($user_account)
+    {
+        $this->Fields['user_account']->set($user_account);
+        $this->load_by_field('user_account');
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function save_filter($Data)
+    {
+        $this->_set_user_by_account((string)@$Data['user_account']);
+        $this->_set_filter_value($this->_remove_excess_from_data($Data));
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_user_filter($user_account)
+    {
+        $this->_set_user_by_account($user_account);
+        return $this->_get_filter_value();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_filter_value()
+    {
+        return json_decode($this->Fields['filter']->get());
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _remove_excess_from_data($Data)
+    {
+        unset($Data['user_account']);
+        unset($Data['action']);
+        return json_encode($Data);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _set_filter_value($Filter_value)
+    {
+        $this->Fields['filter']->set($Filter_value);
+        $this->DBHandler->update();
     }
     /////////////////////////////////////////////////////////////////////////////
 }
