@@ -16,15 +16,26 @@ class MainFiltersModel extends MainModel
         $this->_Location = new Location();
     }
 
-    /*public function action_radius()
+    public function action_radius()
     {
-        $radius = $this->_Users->get_user_s_radius(@$_GET['user_account']);
+        $radius_km = $this->_Users->get_user_s_radius(@$_GET['user_account']);
+        $radius_grad = $this->_round_up($radius_km / 111.111, 2);
         $coordinates = $this->_Location->get_last_coordinates_by_user(@$_GET['user_account']);
-        $users = $this->_Location->get_users_by_radius($coordinates, $radius);
-        //die();
-        var_dump($users);
-        die();
-    }*/
+        $this->Result = array(
+                'users'
+                    => $this->_Location->get_users_by_radius($coordinates, $radius_grad, $radius_km, @$_GET['user_account'])
+            );
+    }
+
+    private function _round_up($value, $precision = 2)
+    {
+        if ($precision < 0)
+        {
+            $precision = 0;
+        }
+        $mult = pow(10, $precision);
+        return ceil($value * $mult) / $mult;
+    }
 
     public function action_get_filter()
     {
