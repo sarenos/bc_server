@@ -32,7 +32,7 @@ class Location extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_last_coordinates_by_user($user_account)
+    private function _get_last_coordinates_by_user($user_account)
     {
         $this->_DBHandler->exec_query("SELECT latitude AS lat, longitude AS lng FROM `bc_locations` WHERE `user_account` LIKE '$user_account' ORDER BY `date_crt` DESC LIMIT 1");
         return $this->_DBHandler->get_data();
@@ -48,13 +48,16 @@ class Location extends EntityWithDB
     }*/
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_users_by_radius($coordinates, $radius_grad, $radius_km, $user_account)
+    public function get_sql_for_filter_radius($radius_km, $user_account)
     {
+        $coordinates = $this->_get_last_coordinates_by_user($user_account);
+        $radius_grad = $this->_round_up($radius_km / 111.111, 2);
+        
         $lat = (float)@$coordinates['lat'];
         $lng = (float)@$coordinates['lng'];
         
-        $this->_DBHandler->exec_query("
-            SELECT
+        return "
+            (SELECT
               *, (
                 6371 * acos (
                   cos ( radians($lat) )
@@ -65,17 +68,32 @@ class Location extends EntityWithDB
                 )
               ) AS distance
             FROM 
-                (SELECT * FROM (SELECT user_account, lat, lng FROM (
+                (SELECT * FROM " . $this->get_sql_for_users_last_coords() . " t_users_last_coords
+                WHERE `lat` >= " . ($lat - $radius_grad) . " AND `lat` <= " . ($lat + $radius_grad) . " AND `lng` >= " . ($lng - $radius_grad) . " AND `lng` <= " . ($lng + $radius_grad)
+                    . ") `t_users_close`
+            HAVING distance < $radius_km
+            ORDER BY distance) `t_users_in_radius`";
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_sql_for_users_last_coords()
+    {
+        return "(SELECT user_account, lat, lng FROM (
                     SELECT user_account, date_crt, latitude AS lat, longitude AS lng
                     FROM `bc_locations`
                     ORDER BY date_crt DESC
-                    ) t_sort_dt GROUP BY user_account) t_user_last_coords
-                WHERE `lat` >= " . ($lat - $radius_grad) . " AND `lat` <= " . ($lat + $radius_grad) . " AND `lng` >= " . ($lng - $radius_grad) . " AND `lng` <= " . ($lng + $radius_grad)
-                    . " AND `user_account` NOT LIKE '$user_account') `t_users_close`
-            HAVING distance < $radius_km
-            ORDER BY distance"
-        );
-        return $this->_DBHandler->get_data();
+                    ) t_sort_dt GROUP BY user_account)";
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    private function _round_up($value, $precision = 2)
+    {
+        if ($precision < 0)
+        {
+            $precision = 0;
+        }
+        $mult = pow(10, $precision);
+        return ceil($value * $mult) / $mult;
     }
     /////////////////////////////////////////////////////////////////////////////
 }

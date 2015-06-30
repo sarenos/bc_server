@@ -250,7 +250,7 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_users_by_filters($Data)
+    public function get_users_by_filters($Data, $sql_filter)
     {
         $filter = $this->_get_filter_for_age(@$Data['minAge'], @$Data['maxAge']);
         if (isset($Data['sex']))
@@ -261,26 +261,29 @@ class User extends EntityWithDB
             }
             $filter .= "sex = '".@$Data['sex']."'";
         }
-        if (empty($filter))
+        if (!empty($filter))
         {
-            $filter = '1';
+            $filter .= ' AND ';
         }
-        $this->DBHandler->db->exec_query("SELECT user_id, name, age, sex, photo FROM bc_users_info WHERE " . $filter);
+        $filter .= "bc_users_info.user_account NOT LIKE '" . @$Data['user_account'] . "'";
+        $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.name, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
+                . " FROM bc_users_info JOIN $sql_filter"
+                . " ON bc_users_info.user_account = t_users_in_radius.user_account WHERE $filter");
         return array('data' => $this->DBHandler->db->get_all_data());
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_user_s_radius($user_account)
+    /*private function _get_user_s_radius($user_account)
     {
         $this->Fields['user_account']->set($user_account);
         $this->load_by_field('user_account');
         return (float)@$this->Fields['radius']->get();
-    }
+    }*/
     /////////////////////////////////////////////////////////////////////////////
     
     private function _get_filter_for_age($minAge, $maxAge)
     {
-        if (isset($minAge) && isset($maxAge))
+        if (!empty($minAge) && !empty($maxAge))
         {
             return 'age >= ' . $minAge . ' AND age <= ' . $maxAge;
         }

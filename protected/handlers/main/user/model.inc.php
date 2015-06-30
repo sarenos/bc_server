@@ -1,16 +1,19 @@
 <?php
 
 require_once LAYERS_DIR . '/User/user.php';
+require_once LAYERS_DIR . '/Location/location.php';
 
 class MainUserModel extends MainModel
 {
     private $_User;
+    private $_Location;
     private $_DBHandler;
     
     public function __construct()
     {
         parent::__construct();
         $this->_User = new User();
+        $this->_Location = new Location();
         $this->_DBHandler = produce_db();
     }
 
@@ -39,7 +42,15 @@ class MainUserModel extends MainModel
     public function action_filter()
     {
         $this->_User->save_filter($_GET);
-        $this->Result = $this->_User->get_users_by_filters($_GET);
+        if (!empty($_GET['radius']))
+        {
+            $sql_filter = $this->_Location->get_sql_for_filter_radius((float)@$_GET['radius'], @$_GET['user_account']);
+        }
+        else
+        {
+            $sql_filter = $this->_Location->get_sql_for_users_last_coords() . " AS `t_users_in_radius`";
+        }
+        $this->Result = $this->_User->get_users_by_filters($_GET, $sql_filter);
     }
     
     public function action_default()
