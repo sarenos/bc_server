@@ -129,6 +129,14 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    private function _get_user_account_by_nick($nick)
+    {
+        $this->Fields['name']->set($nick);
+        $this->load_by_field('name');
+        return $this->Fields['user_account']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     private function _add()
     {
         $this->Fields['user_account']->set($this->_user_account);
@@ -155,6 +163,20 @@ class User extends EntityWithDB
                     'statusCode'    => 4,
                     'statusMessage' => 'Пользователя с таким аккаунтом нет в системе!');
         }
+        $user_account_by_nick = $this->_get_user_account_by_nick((string)@$data['name']);
+        if ($user_account_by_nick != '' && $user_account_by_nick != @$data['user_account'])
+        {
+            return array(
+                    'statusCode'    => 6,
+                    'statusMessage' => 'Пользователя с таким именем уже зарегистрирован в системе!');
+        }
+        if (!$this->_is_nick_valid((string)@$data['name']))
+        {
+            return array(
+                    'statusCode'    => 7,
+                    'statusMessage' => 'Некорректное имя (должно состоять из символов латинского алфавита или цифр, длина должна быть 4-20 символов)!');
+        }
+        $this->Fields['user_account']->set(trim((string)@$data['user_account']));
         $this->Fields['name']->set(trim((string)@$data['name']));
         $this->Fields['age']->set(trim((string)@$data['age']));
         $this->Fields['sex']->set(trim((string)@$data['sex']));
@@ -193,6 +215,16 @@ class User extends EntityWithDB
                     'statusMessage' => 'Проверьте правильность email адреса!');
         }
         return $result;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _is_nick_valid($nick)
+    {
+        if (preg_match("/^[a-z0-9_\.-]{4,20}$/", $nick))
+        {
+            return true;
+        }
+        return false;
     }
     /////////////////////////////////////////////////////////////////////////////
     
