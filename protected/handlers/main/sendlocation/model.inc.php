@@ -21,7 +21,11 @@ class MainSendLocationModel extends MainModel
         on duplicate key update latitude=$latitude, longitude=$longitude, date_crt='$date'");
 
  $this->_DBHandler->exec_query("INSERT INTO bc_user_loc_archive (user_account, latitude, longitude, date_crt) VALUES ('$user_account', $latitude, $longitude, '$date')");
-        $this->Result = "ok";
+
+          $this->_DBHandler->exec_query("SELECT new_messages  FROM bc_users_info WHERE user_account LIKE '$user_account'");
+          $selectResult = $this->_DBHandler->get_all_data();
+
+        $this->Result =  array('data' =>  $selectResult);
     }
 
     public function run()

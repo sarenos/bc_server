@@ -13,8 +13,8 @@ class MainLocationsModel extends MainModel
     public function action_default()
     {
         $user_account= (String)@$_POST['user_account'];
-        $this->_DBHandler->exec_query(" SELECT id, latitude, user_account, longitude, date_crt FROM bc_locations WHERE user_account NOT LIKE '".$user_account."' and date_crt > date_sub(now(), INTERVAL 100 HOUR)");
-        $this->Result = $this->_DBHandler->get_all_data();
+        $this->_DBHandler->exec_query(" SELECT bcui.user_id, bcui.name, bcl.latitude, bcl.user_account, bcl.longitude, bcui.sex, bcui.age ,bcl.date_crt, bcui.photo FROM bc_locations  as bcl, bc_users_info as bcui WHERE bcl.user_account NOT LIKE '".$user_account."'  AND bcl.user_account LIKE bcui.user_account");
+        $this->Result = array("data" =>$this->_DBHandler->get_all_data());
     }
 
     public function run()
