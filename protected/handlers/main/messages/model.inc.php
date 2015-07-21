@@ -52,7 +52,7 @@ class MainMessagesModel extends MainModel
     public function action_one_friend()
     {
         $this->_Connections->set_users((float)@$_GET['user'], (float)@$_GET['friend']);
-        $this->_Messages->set_data($_GET);
+$this->_Messages->set_data($_GET);
         $this->Result = array('data' =>
                             $this->_Messages
                                     ->get_list_with_one_friend(
@@ -68,7 +68,7 @@ class MainMessagesModel extends MainModel
         {
             $Message_data['name'] = $this->_User->get_name_by_id($Message_data['id']);
             $Message_data['photo'] = $this->_User->get_photo_by_id($Message_data['id']);
-            $Message_data['age'] = $this->_User->get_age_by_id($Message_data['id']);
+$Message_data['age'] = $this->_User->get_age_by_id($Message_data['id']);
             $Res_data[] = $Message_data;
         }
         $this->Result = array('data' => $Res_data);
