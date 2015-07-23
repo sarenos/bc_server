@@ -11,7 +11,7 @@ class User extends EntityWithDB
     {
         $result['user_id']          = new FieldInt();
         $result['user_account']     = new FieldString();
-        $result['name']             = new FieldString();
+        $result['nick']             = new FieldString();
         $result['age']              = new FieldInt();
         $result['sex']              = new FieldString();
         $result['android_account']  = new FieldString();
@@ -27,7 +27,7 @@ class User extends EntityWithDB
         $result['filter']           = new FieldString();
         
         $result['user_account']->set_max_length(50);
-        $result['name']->set_max_length(20);
+        $result['nick']->set_max_length(20);
         $result['sex']->set_max_length(1);
         $result['android_account']->set_max_length(255);
         $result['phone']->set_max_length(15);
@@ -55,19 +55,19 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_name_by_id($user_id)
+    public function get_nick_by_id($user_id)
     {
         $this->Fields['user_id']->set($user_id);
         $this->load_by_field('user_id');
-        return $this->Fields['name']->get();
+        return $this->Fields['nick']->get();
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_name_by_account($user_account)
+    public function get_nick_by_account($user_account)
     {
         $this->Fields['user_account']->set($user_account);
         $this->load_by_field('user_account');
-        return $this->Fields['name']->get();
+        return $this->Fields['nick']->get();
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -121,11 +121,30 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _is_exist()
+    public function get_user_id_for_auth()
+    {
+        $user_id = $this->_get_user_id_by_account();
+        if (!$user_id)
+        {
+            return array(
+                    'status'    => 1,
+                    'statusMsg' => 'Пользователь с таким аккаунтом не зарегистрирован!');
+        }
+        return array('user_id' => $user_id);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_user_id_by_account()
     {
         $this->Fields['user_account']->set($this->_user_account);
         $this->load_by_field('user_account');
-        return 0 != $this->Fields['user_id']->get();
+        return $this->Fields['user_id']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _is_exist()
+    {
+        return 0 != $this->_get_user_id_by_account();
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -160,21 +179,21 @@ class User extends EntityWithDB
         if (!$this->_is_exist())
         {
             return array(
-                    'statusCode'    => 4,
-                    'statusMessage' => 'Пользователя с таким аккаунтом нет в системе!');
+                    'status'    => 4,
+                    'statusMsg' => 'Пользователя с таким аккаунтом нет в системе!');
         }
         $user_account_by_nick = $this->_get_user_account_by_nick((string)@$data['name']);
         if ($user_account_by_nick != '' && $user_account_by_nick != @$data['user_account'])
         {
             return array(
-                    'statusCode'    => 6,
-                    'statusMessage' => 'Пользователя с таким именем уже зарегистрирован в системе!');
+                    'status'    => 6,
+                    'statusMsg' => 'Пользователя с таким именем уже зарегистрирован в системе!');
         }
         if (!$this->_is_nick_valid((string)@$data['name']))
         {
             return array(
-                    'statusCode'    => 7,
-                    'statusMessage' => 'Некорректное имя (должно состоять из символов латинского алфавита или цифр, длина должна быть 4-20 символов)!');
+                    'status'    => 7,
+                    'statusMsg' => 'Некорректное имя (должно состоять из символов латинского алфавита или цифр, длина должна быть 4-20 символов)!');
         }
         $this->Fields['user_account']->set(trim((string)@$data['user_account']));
         $this->Fields['name']->set(trim((string)@$data['name']));
@@ -196,8 +215,8 @@ class User extends EntityWithDB
         if (!$this->_is_exist())
         {
             return array(
-                    'statusCode'    => 4,
-                    'statusMessage' => 'Пользователя с таким аккаунтом нет в системе!');
+                    'status'    => 4,
+                    'statusMsg' => 'Пользователя с таким аккаунтом нет в системе!');
         }
         $this->DBHandler->delete_by_field('user_account');
         return true;
@@ -211,8 +230,8 @@ class User extends EntityWithDB
         if (!preg_match("/^([a-z0-9_\.-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})$/", $this->_user_account))
         {
             return array(
-                    'statusCode'    => 5,
-                    'statusMessage' => 'Проверьте правильность email адреса!');
+                    'status'    => 5,
+                    'statusMsg' => 'Проверьте правильность email адреса!');
         }
         return $result;
     }

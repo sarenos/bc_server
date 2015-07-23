@@ -1,18 +1,25 @@
 <?php
 
+require_once LAYERS_DIR . '/User/user.php';
+
 class MainAuthorizationModel extends MainModel
 {
+    private $_User;
     private $_DBHandler;
-
+    
     public function __construct()
     {
         parent::__construct();
+        $this->_User = new User();
         $this->_DBHandler = produce_db();
     }
 
     public function action_default()
     {
-        $user_account = (String)@$_GET['user_account'];
+        $this->_User->set_user_account((string)@$_POST['user_account']);
+        $this->Result = $this->_User->get_user_id_for_auth();
+        
+        /*$user_account = (String)@$_GET['user_account'];
         $this->_DBHandler->exec_query("SELECT * FROM bc_users_info WHERE user_account LIKE '$user_account'");
         $selectResult = $this->_DBHandler->get_all_data();
         if(empty($selectResult))
@@ -53,7 +60,7 @@ if($result[0]['status'] == "-1")  {
             }
         }
 
-        $this->Result = array("data" => $selectResult);
+        $this->Result = array("data" => $selectResult);*/
     }
 
 

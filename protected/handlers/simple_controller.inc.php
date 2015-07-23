@@ -122,11 +122,15 @@ function run()
             unset($ModelResult['status']);
         };
 
-        $Response = array_merge(array(
-            'statusCode' => 1,
-            'statusMessage' => $e->getMessage(),
+        /*$Response = array_merge(array(
+            'status' => 1,
+            'statusMsg' => $e->getMessage(),
             'code' => $e->getCode(),
-        ), $ModelResult);
+        ), $ModelResult);*/
+        $Response = array(
+            'status' => 2,
+            'statusMsg' => 'Ошибка соединения с сервером. Повторите попытку позже.'
+        );
         echo json_encode($Response);
         die();
      }

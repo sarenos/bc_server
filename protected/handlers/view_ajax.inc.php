@@ -14,16 +14,16 @@ class ViewAjax extends ViewTemplated
     {
         $model_result = $this-> Model-> get_result();
         $result = array();
-        if (!isset($model_result['statusCode']))
+        if (!isset($model_result['status']))
         {
             $result = array(
-                            'statusCode' => 0
+                            'status' => 0
                         );
         }
-        if (!isset($model_result['statusMessage']))
+        if (!isset($model_result['statusMsg']))
         {
             $result += array(
-                            'statusMessage' => 'ok'
+                            'statusMsg' => 'ok'
                         );
         }
         if ($model_result === true)

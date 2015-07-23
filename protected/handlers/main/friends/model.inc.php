@@ -38,7 +38,7 @@ class MainFriendsModel extends MainModel
         $Res_data = array();
         foreach ($this->_Friends->get_list() as $Friend_data)
         {
-            $Friend_data['name'] = $this->_User->get_name_by_account($Friend_data['user_id']);
+            $Friend_data['name'] = $this->_User->get_nick_by_account($Friend_data['user_id']);
             $Friend_data['photo'] = $this->_User->get_photo_by_account($Friend_data['user_id']);
  $Friend_data['age'] = $this->_User->get_age_by_account($Friend_data['user_id']);
             $Res_data[] = $Friend_data;
