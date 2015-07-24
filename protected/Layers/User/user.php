@@ -150,8 +150,8 @@ class User extends EntityWithDB
     
     private function _get_user_account_by_nick($nick)
     {
-        $this->Fields['name']->set($nick);
-        $this->load_by_field('name');
+        $this->Fields['nick']->set($nick);
+        $this->load_by_field('nick');
         return $this->Fields['user_account']->get();
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -187,6 +187,10 @@ class User extends EntityWithDB
         {
             throw new ExceptionProcessing(1);
         }
+        if ($this->_is_exist())
+        {
+            throw new ExceptionProcessing(2);
+        }
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -196,12 +200,13 @@ class User extends EntityWithDB
         $user_account_by_nick = $this->_get_user_account_by_nick((string)@$data['nick']);
         if ($user_account_by_nick != '' && $user_account_by_nick != (string)@$data['user_account'])
         {
-            throw new ExceptionProcessing(2);
+            throw new ExceptionProcessing(3);
         }
         if (!$this->_is_nick_valid((string)@$data['nick']))
         {
-            throw new ExceptionProcessing(3);
+            throw new ExceptionProcessing(4);
         }
+        return true;
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -315,7 +320,7 @@ class User extends EntityWithDB
             $filter .= ' AND ';
         }
         $filter .= "bc_users_info.user_account NOT LIKE '" . @$Data['user_account'] . "'";
-        $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.name, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
+        $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
                 . " FROM bc_users_info JOIN $sql_filter"
                 . " ON bc_users_info.user_account = t_users_in_radius.user_account WHERE $filter");
         return array('data' => $this->DBHandler->db->get_all_data());
