@@ -105,7 +105,7 @@ class User extends EntityWithDB
     
     public function get_info()
     {
-        $res = $this->_checkEmail();
+        $res = $this->_validate_account();
         if (empty($res))
         {
             if (!$this->_is_exist())
@@ -167,36 +167,48 @@ class User extends EntityWithDB
     public function create($Data)
     {
         $this->set_user_account((string)@$Data['user_account']);
+        $this->_validate_data($Data);
         $this->_add();
         $this->update_data($Data);
         return array('id' => (int)@$this->Fields['user_id']->get());
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    private function _validate_data($data)
+    {
+        $this->_validate_account();
+        $this->_validate_nick($data);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    protected function _validate_account()
+    {
+        if (!preg_match("/^([a-z0-9_\.-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})$/", $this->_user_account))
+        {
+            throw new ExceptionProcessing(1);
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _validate_nick($data)
+    {
+        $user_account_by_nick = $this->_get_user_account_by_nick((string)@$data['nick']);
+        if ($user_account_by_nick != '' && $user_account_by_nick != (string)@$data['user_account'])
+        {
+            throw new ExceptionProcessing(2);
+        }
+        if (!$this->_is_nick_valid((string)@$data['nick']))
+        {
+            throw new ExceptionProcessing(3);
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function update_data($data)
     {
-        $this->_user_account = $data['user_account'];
-        if (!$this->_is_exist())
-        {
-            return array(
-                    'status'    => 4,
-                    'statusMsg' => 'Пользователя с таким аккаунтом нет в системе!');
-        }
-        $user_account_by_nick = $this->_get_user_account_by_nick((string)@$data['name']);
-        if ($user_account_by_nick != '' && $user_account_by_nick != @$data['user_account'])
-        {
-            return array(
-                    'status'    => 6,
-                    'statusMsg' => 'Пользователя с таким именем уже зарегистрирован в системе!');
-        }
-        if (!$this->_is_nick_valid((string)@$data['name']))
-        {
-            return array(
-                    'status'    => 7,
-                    'statusMsg' => 'Некорректное имя (должно состоять из символов латинского алфавита или цифр, длина должна быть 4-20 символов)!');
-        }
         $this->Fields['user_account']->set(trim((string)@$data['user_account']));
-        $this->Fields['name']->set(trim((string)@$data['name']));
+        $this->Fields['nick']->set(trim((string)@$data['nick']));
         $this->Fields['age']->set(trim((string)@$data['age']));
         $this->Fields['sex']->set(trim((string)@$data['sex']));
         $this->Fields['android_account']->set(trim((string)@$data['android_account']));
@@ -220,20 +232,6 @@ class User extends EntityWithDB
         }
         $this->DBHandler->delete_by_field('user_account');
         return true;
-    }
-    /////////////////////////////////////////////////////////////////////////////
-    
-    protected function _checkEmail()
-    {
-        $result = array();
-
-        if (!preg_match("/^([a-z0-9_\.-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})$/", $this->_user_account))
-        {
-            return array(
-                    'status'    => 5,
-                    'statusMsg' => 'Проверьте правильность email адреса!');
-        }
-        return $result;
     }
     /////////////////////////////////////////////////////////////////////////////
     

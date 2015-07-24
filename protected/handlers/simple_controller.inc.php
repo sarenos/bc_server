@@ -127,10 +127,20 @@ function run()
             'statusMsg' => $e->getMessage(),
             'code' => $e->getCode(),
         ), $ModelResult);*/
-        $Response = array(
-            'status' => 2,
-            'statusMsg' => 'Ошибка соединения с сервером. Повторите попытку позже.'
-        );
+        if (strpos($e->getMessage(), 'bambi') === 0)
+        {
+            $Response = array(
+                'status' => 1,
+                'statusMsg' => substr($e->getMessage(), 5)
+            );
+        }
+        else
+        {
+            $Response = array(
+                'status' => 2,
+                'statusMsg' => 'Ошибка соединения с сервером. Повторите попытку позже.'
+            );
+        }
         echo json_encode($Response);
         die();
      }

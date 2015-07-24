@@ -3,6 +3,7 @@
 require_once LAYERS_DIR . '/Customer/customer_auth.inc.php';
 require_once LAYERS_DIR . '/HTTP/browser.inc.php';
 require_once dirname(__FILE__) .'/data_model.inc.php';
+require_once LAYERS_DIR.'/Exception/exception_process.inc.php';
                        
 class MainModel extends DataModel
 {
