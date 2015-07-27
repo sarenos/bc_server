@@ -5,6 +5,7 @@ require_once LAYERS_DIR . '/Entity/entity_with_db.inc.php';
 class User extends EntityWithDB
 {
     private $_user_account = '';
+    private $_Data = null;
     /////////////////////////////////////////////////////////////////////////////
     
     public function &get_all_fields_instances()
@@ -52,6 +53,23 @@ class User extends EntityWithDB
     {
         $this->_user_account = $user_account;
         return $this;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function set_data($Data)
+    {
+        $this->_Data = $Data;
+        return $this;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_data_field($field)
+    {
+        if (isset($this->_Data[$field]))
+        {
+            return trim(html_entity_decode((string)$this->_Data[$field]));
+        }
+        return '';
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -126,9 +144,7 @@ class User extends EntityWithDB
         $user_id = $this->_get_user_id_by_account();
         if (!$user_id)
         {
-            return array(
-                    'status'    => 1,
-                    'statusMsg' => 'Пользователь с таким аккаунтом не зарегистрирован!');
+            throw new ExceptionProcessing(1);
         }
         return array('user_id' => $user_id);
     }
@@ -159,68 +175,139 @@ class User extends EntityWithDB
     private function _add()
     {
         $this->Fields['user_account']->set($this->_user_account);
+        $this->Fields['filter']->set($this->_get_default_filter());
         $this->Fields['dt_create']->now();
         $this->DBHandler->insert();
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function create($Data)
+    private function _get_default_filter()
     {
-        $this->set_user_account((string)@$Data['user_account']);
-        $this->_validate_data($Data);
+        return json_encode(
+                array(
+                    'sex'   => FILTER_SEX,
+                    'minAge'=> FILTER_MINAGE,
+                    'maxAge'=> FILTER_MAXAGE,
+                    'radius'=> FILTER_RADIUS
+                ));
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function create()
+    {
+        $this->set_user_account((string)@$this->_Data['user_account']);
+        $this->_validate_data();
         $this->_add();
-        $this->update_data($Data);
+        $this->update_data();
         return array('id' => (int)@$this->Fields['user_id']->get());
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _validate_data($data)
+    private function _validate_data()
     {
         $this->_validate_account();
-        $this->_validate_nick($data);
+        $this->_validate_nick();
+        $this->_validate_age($this->_get_data_field('age'));
+        $this->_validate_sex($this->_get_data_field('sex'));
+        $this->_validate_android_account($this->_get_data_field('android_account'));
+        $this->_validate_city($this->_get_data_field('city'));
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    protected function _validate_account()
+    private function _validate_account()
     {
-        if (!preg_match("/^([a-z0-9_\.-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})$/", $this->_user_account))
-        {
-            throw new ExceptionProcessing(1);
-        }
-        if ($this->_is_exist())
+        if (!$this->_is_valid_email($this->_user_account))
         {
             throw new ExceptionProcessing(2);
         }
-        return true;
-    }
-    /////////////////////////////////////////////////////////////////////////////
-    
-    private function _validate_nick($data)
-    {
-        $user_account_by_nick = $this->_get_user_account_by_nick((string)@$data['nick']);
-        if ($user_account_by_nick != '' && $user_account_by_nick != (string)@$data['user_account'])
+        if ($this->_is_exist())
         {
             throw new ExceptionProcessing(3);
         }
-        if (!$this->_is_nick_valid((string)@$data['nick']))
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _is_valid_email($email)
+    {
+        if (!preg_match("/^([a-z0-9_\.-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})$/", $email))
         {
-            throw new ExceptionProcessing(4);
+            return false;
         }
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function update_data($data)
+    private function _validate_nick()
     {
-        $this->Fields['user_account']->set(trim((string)@$data['user_account']));
-        $this->Fields['nick']->set(trim((string)@$data['nick']));
-        $this->Fields['age']->set(trim((string)@$data['age']));
-        $this->Fields['sex']->set(trim((string)@$data['sex']));
-        $this->Fields['android_account']->set(trim((string)@$data['android_account']));
-        $this->Fields['phone']->set(trim((string)@$data['phone']));
-        $this->Fields['vk_id']->set(trim((string)@$data['vk_id']));
-        $this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
-        $this->Fields['city']->set(trim((string)@$data['city']));
+        $user_account_by_nick = $this->_get_user_account_by_nick($this->_get_data_field('nick'));
+        if ($user_account_by_nick != '' && $user_account_by_nick != $this->_get_data_field('user_account'))
+        {
+            throw new ExceptionProcessing(4);
+        }
+        if (!preg_match("/^[a-z0-9_\.-]+$/", $this->_get_data_field('nick')))
+        {
+            throw new ExceptionProcessing(5);
+        }
+        if (!preg_match("/^.{4,20}$/", $this->_get_data_field('nick')))
+        {
+            throw new ExceptionProcessing(6);
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    protected function _validate_age($age)
+    {
+        if (!is_numeric($age) || ((int)$age < 14 || (int)$age > 99))
+        {
+            throw new ExceptionProcessing(7);
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    protected function _validate_sex($sex)
+    {
+        if ($sex == 'm' || $sex == 'f')
+        {
+            return true;
+        }
+        throw new ExceptionProcessing(8);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    protected function _validate_android_account($android_account)
+    {
+        if (!$this->_is_valid_email($android_account))
+        {
+            throw new ExceptionProcessing(9);
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    protected function _validate_city($city)
+    {
+        if (!preg_match("/^[А-Яа-яЁёa-zA-Z\s-,]{2,100}$/", $city))
+        {
+            throw new ExceptionProcessing(10);
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function update_data()
+    {
+        $this->Fields['user_account']->set($this->_get_data_field('user_account'));
+        $this->Fields['nick']->set($this->_get_data_field('nick'));
+        $this->Fields['age']->set($this->_get_data_field('age'));
+        $this->Fields['sex']->set($this->_get_data_field('sex'));
+        $this->Fields['android_account']->set($this->_get_data_field('android_account'));
+        //$this->Fields['phone']->set(trim((string)@$data['phone']));
+        //$this->Fields['vk_id']->set(trim((string)@$data['vk_id']));
+        //$this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
+        $this->Fields['city']->set($this->_get_data_field('city'));
         $this->Fields['dt_create']->now();
         $this->DBHandler->update();
         return true;
@@ -237,16 +324,6 @@ class User extends EntityWithDB
         }
         $this->DBHandler->delete_by_field('user_account');
         return true;
-    }
-    /////////////////////////////////////////////////////////////////////////////
-    
-    private function _is_nick_valid($nick)
-    {
-        if (preg_match("/^[a-z0-9_\.-]{4,20}$/", $nick))
-        {
-            return true;
-        }
-        return false;
     }
     /////////////////////////////////////////////////////////////////////////////
     

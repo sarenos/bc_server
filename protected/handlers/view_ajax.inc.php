@@ -4,6 +4,7 @@ class ViewAjax extends ViewTemplated
 {
     public function fill()
     {
+         header('Content-Type: application/json; charset=utf-8;');
          parent::fill();
          $this-> set_template('result_ajax.tpl');
          $this-> assign('Result', $this->_get_model_result());

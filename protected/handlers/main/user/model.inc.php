@@ -25,7 +25,8 @@ class MainUserModel extends MainModel
     
     public function action_create()
     {
-        $this->Result = $this->_User->create($_POST);
+        $this->_User->set_data($_POST);
+        $this->Result = $this->_User->create();
     }
     
     public function action_update()

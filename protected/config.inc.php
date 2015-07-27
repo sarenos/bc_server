@@ -51,5 +51,10 @@ $Config['db_persistent'] = false;
 $Config['db_debug_mode'] = true;
 define('PER_PAGE_DEFAULT', 13);
 
+/* filter default values */
+define('FILTER_SEX', 'all');
+define('FILTER_MINAGE', 14);
+define('FILTER_MAXAGE', 99);
+define('FILTER_RADIUS', 5);
 
 return true;
