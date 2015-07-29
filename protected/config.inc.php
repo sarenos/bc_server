@@ -48,7 +48,7 @@ $Config['db_pass'] = '37pxo9OZV3Ko8ITajQ';
 //$Config['db_pass'] = '';
 
 $Config['db_persistent'] = false;
-$Config['db_debug_mode'] = true;
+$Config['db_debug_mode'] = false;
 define('PER_PAGE_DEFAULT', 13);
 
 /* filter default values */
