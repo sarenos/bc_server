@@ -14,7 +14,7 @@ class MainAuthorizationModel extends MainModel
         $this->_DBHandler = produce_db();
     }
 
-    public function action_default()
+    public function action_authorization()
     {
         $this->_User->set_user_account((string)@$_POST['user_account']);
         $this->Result = $this->_User->get_user_id_for_auth();
