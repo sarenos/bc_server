@@ -141,8 +141,7 @@ function run()
                 'statusMsg' => 'Ошибка соединения с сервером. Повторите попытку позже.'
             );
         }
-        //echo json_encode($Response);
-        var_dump($Response);
+        echo json_encode($Response);
         die();
      }
 }
