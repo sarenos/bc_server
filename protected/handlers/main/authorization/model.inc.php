@@ -16,7 +16,7 @@ class MainAuthorizationModel extends MainModel
 
     public function action_authorization()
     {
-        $this->_User->set_user_account((string)@$_POST['user_account']);
+        $this->_User->set_user_account((string)@$_GET['user_account']);
         $this->Result = $this->_User->get_user_id_for_auth();
         
         /*$user_account = (String)@$_GET['user_account'];
