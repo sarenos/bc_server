@@ -25,7 +25,7 @@ protected $redirect_url = HTTP_ABS_PATH;
 
 function __construct()
 {
-     
+    header('charset=utf-8;');
 }
 ///////////////////////////////////////////////////////////////////////////
 
@@ -141,7 +141,8 @@ function run()
                 'statusMsg' => 'Ошибка соединения с сервером. Повторите попытку позже.'
             );
         }
-        echo json_encode($Response);
+        //echo json_encode($Response);
+        var_dump($Response);
         die();
      }
 }
