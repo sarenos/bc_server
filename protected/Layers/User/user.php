@@ -245,7 +245,7 @@ class User extends EntityWithDB
         {
             throw new ExceptionProcessing(4);
         }
-        if (!preg_match("/^[a-z0-9_\.-]+$/", $this->_get_data_field('nick')))
+        if (!preg_match("/^[A-Za-z0-9_\.-]+$/", $this->_get_data_field('nick')))
         {
             throw new ExceptionProcessing(5);
         }
@@ -289,7 +289,7 @@ class User extends EntityWithDB
     
     protected function _validate_city($city)
     {
-        if (!preg_match("/^[А-Яа-яЁёa-zA-Z\s-,]{2,100}$/", $city))
+        if (!preg_match("/^[А-Яа-яЁёA-Za-z\s-,]{2,100}$/", $city))
         {
             throw new ExceptionProcessing(10);
         }
