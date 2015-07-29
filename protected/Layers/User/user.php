@@ -209,8 +209,8 @@ class User extends EntityWithDB
         $this->_validate_nick();
         $this->_validate_age($this->_get_data_field('age'));
         $this->_validate_sex($this->_get_data_field('sex'));
-        $this->_validate_android_account($this->_get_data_field('android_account'));
-        $this->_validate_city($this->_get_data_field('city'));
+        //$this->_validate_android_account($this->_get_data_field('android_account'));
+        //$this->_validate_city($this->_get_data_field('city'));
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -277,24 +277,24 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    protected function _validate_android_account($android_account)
+    /*protected function _validate_android_account($android_account)
     {
         if (!$this->_is_valid_email($android_account))
         {
             throw new ExceptionProcessing(9);
         }
         return true;
-    }
+    }*/
     /////////////////////////////////////////////////////////////////////////////
     
-    protected function _validate_city($city)
+    /*protected function _validate_city($city)
     {
         if (!preg_match("/^[А-Яа-яЁёA-Za-z\s-,]{2,100}$/", $city))
         {
             throw new ExceptionProcessing(10);
         }
         return true;
-    }
+    }*/
     /////////////////////////////////////////////////////////////////////////////
     
     public function update_data()
