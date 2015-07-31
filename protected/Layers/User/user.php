@@ -81,6 +81,16 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function check_exist_by_user_id($user_id)
+    {
+        if ('' == $this->get_nick_by_id($user_id))
+        {
+            throw new ExceptionProcessing(11);
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function get_nick_by_account($user_account)
     {
         $this->Fields['user_account']->set($user_account);

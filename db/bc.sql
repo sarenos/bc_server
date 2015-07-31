@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 23, 2015 at 05:07 PM
+-- Generation Time: Jul 31, 2015 at 07:04 PM
 -- Server version: 5.5.29-0ubuntu0.12.04.2
 -- PHP Version: 5.5.27-1+deb.sury.org~precise+1
 
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `bc_locations` (
   `latitude` double DEFAULT NULL,
   `longitude` double DEFAULT NULL,
   `date_crt` datetime NOT NULL,
-  `user_account` varchar(255) NOT NULL
+  `user_id` bigint(30) unsigned NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `bc_users_info` (
 
 CREATE TABLE IF NOT EXISTS `bc_user_loc_archive` (
 `id` int(11) NOT NULL,
-  `user_account` varchar(255) NOT NULL,
+  `user_id` bigint(30) unsigned NOT NULL,
   `latitude` double NOT NULL,
   `longitude` double NOT NULL,
   `date_crt` datetime NOT NULL
@@ -133,7 +133,7 @@ ALTER TABLE `bc_friends`
 -- Indexes for table `bc_locations`
 --
 ALTER TABLE `bc_locations`
- ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `date_crt` (`date_crt`,`user_account`);
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `date_crt` (`date_crt`,`user_id`);
 
 --
 -- Indexes for table `bc_messages`
@@ -151,7 +151,7 @@ ALTER TABLE `bc_users_info`
 -- Indexes for table `bc_user_loc_archive`
 --
 ALTER TABLE `bc_user_loc_archive`
- ADD PRIMARY KEY (`id`), ADD KEY `user_id` (`user_account`);
+ ADD PRIMARY KEY (`id`), ADD KEY `user_id` (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
