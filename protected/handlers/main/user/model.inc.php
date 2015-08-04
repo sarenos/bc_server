@@ -40,7 +40,7 @@ class MainUserModel extends MainModel
         $this->Result = $this->_User->delete();
     }
     
-    public function action_filter()
+    /*public function action_filter()
     {
         //$this->_User->save_filter($_GET);
         $user_id = @$_GET['user_id'];
@@ -57,8 +57,8 @@ class MainUserModel extends MainModel
         {
             $sql_filter = $this->_Location->get_sql_for_users_last_coords() . " AS `t_users_in_radius`";
         }*/
-        $this->Result = $this->_User->get_users_by_filters($Filter, $sql_filter);
-    }
+        /*$this->Result = $this->_User->get_users_by_filters($Filter, $sql_filter);
+    }*/
     
     public function action_default()
     {
