@@ -32,9 +32,9 @@ class Location extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _get_last_coordinates_by_user($user_account)
+    private function _get_last_coordinates_by_user($user_id)
     {
-        $this->_DBHandler->exec_query("SELECT latitude AS lat, longitude AS lng FROM `bc_locations` WHERE `user_account` LIKE '$user_account' ORDER BY `date_crt` DESC LIMIT 1");
+        $this->_DBHandler->exec_query("SELECT latitude AS lat, longitude AS lng FROM `bc_locations` WHERE `user_id` LIKE '$user_id' ORDER BY `date_crt` DESC LIMIT 1");
         return $this->_DBHandler->get_data();
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -48,9 +48,9 @@ class Location extends EntityWithDB
     }*/
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_sql_for_filter_radius($radius_km, $user_account)
+    public function get_sql_for_filter_radius($radius_km, $user_id)
     {
-        $coordinates = $this->_get_last_coordinates_by_user($user_account);
+        $coordinates = $this->_get_last_coordinates_by_user($user_id);
         $radius_grad = $this->_round_up($radius_km / 111.111, 2);
         
         $lat = (float)@$coordinates['lat'];
@@ -78,11 +78,11 @@ class Location extends EntityWithDB
     
     public function get_sql_for_users_last_coords()
     {
-        return "(SELECT user_account, lat, lng FROM (
-                    SELECT user_account, date_crt, latitude AS lat, longitude AS lng
+        return "(SELECT user_id, lat, lng FROM (
+                    SELECT user_id, date_crt, latitude AS lat, longitude AS lng
                     FROM `bc_locations`
                     ORDER BY date_crt DESC
-                    ) t_sort_dt GROUP BY user_account)";
+                    ) t_sort_dt GROUP BY user_id)";
     }
     /////////////////////////////////////////////////////////////////////////////
 
@@ -94,6 +94,24 @@ class Location extends EntityWithDB
         }
         $mult = pow(10, $precision);
         return ceil($value * $mult) / $mult;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    public function check_time_last_send_coordinates($user_id)
+    {
+        $time_last_send = strtotime($this->_get_last_date_send($user_id)['last_dt_send']);
+        if (time() - $time_last_send > (20 * 60))
+        {
+            throw new ExceptionProcessing(22);
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    private function _get_last_date_send($user_id)
+    {
+        $this->_DBHandler->exec_query("SELECT MAX(date_crt) AS last_dt_send FROM `bc_locations` WHERE user_id=$user_id");
+        return $this->_DBHandler->get_data();
     }
     /////////////////////////////////////////////////////////////////////////////
 }

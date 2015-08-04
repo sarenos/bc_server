@@ -391,25 +391,25 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_users_by_filters($Data, $sql_filter)
+    public function get_users_by_filters($Filter, $sql_join)
     {
-        $filter = $this->_get_filter_for_age(@$Data['minAge'], @$Data['maxAge']);
-        if (isset($Data['sex']))
+        $sql_where = $this->_get_filter_for_age(@$Filter['minAge'], @$Filter['maxAge']);
+        if (isset($Filter['sex']) && $Filter['sex'] != 'all')
         {
-            if (!empty($filter))
+            if (!empty($sql_where))
             {
-                $filter .= ' AND ';
+                $sql_where .= ' AND ';
             }
-            $filter .= "sex = '".@$Data['sex']."'";
+            $sql_where .= "sex = '".@$Filter['sex']."'";
         }
-        if (!empty($filter))
+        if (!empty($sql_where))
         {
-            $filter .= ' AND ';
+            $sql_where .= ' AND ';
         }
-        $filter .= "bc_users_info.user_account NOT LIKE '" . @$Data['user_account'] . "'";
+        $sql_where .= "bc_users_info.user_id NOT LIKE '" . @$Filter['user_id'] . "'";
         $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
-                . " FROM bc_users_info JOIN $sql_filter"
-                . " ON bc_users_info.user_account = t_users_in_radius.user_account WHERE $filter");
+                . " FROM bc_users_info JOIN $sql_join"
+                . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where");
         return array('data' => $this->DBHandler->db->get_all_data());
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -439,6 +439,13 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    private function _set_user_by_id($user_id)
+    {
+        $this->Fields['user_id']->set($user_id);
+        $this->load_by_field('user_id');
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function save_filter($Data)
     {
         $this->_set_user_by_account((string)@$Data['user_account']);
@@ -446,7 +453,14 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_user_filter($user_account)
+    public function get_user_filter($user_id)
+    {
+        $this->_set_user_by_id($user_id);
+        return $this->_get_filter_value();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_user_filter_by_account($user_account)
     {
         $this->_set_user_by_account($user_account);
         return $this->_get_filter_value();

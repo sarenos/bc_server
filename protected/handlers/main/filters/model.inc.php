@@ -15,7 +15,7 @@ class MainFiltersModel extends MainModel
 
     public function action_get_filter()
     {
-        $this->Result = array('filter' => $this->_Users->get_user_filter(@$_GET['user_account']));
+        $this->Result = array('filter' => $this->_Users->get_user_filter(@$_GET['user_id']));
     }
 
     public function action_default()

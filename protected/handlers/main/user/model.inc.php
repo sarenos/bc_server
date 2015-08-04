@@ -42,16 +42,22 @@ class MainUserModel extends MainModel
     
     public function action_filter()
     {
-        $this->_User->save_filter($_GET);
-        if (!empty($_GET['radius']))
+        //$this->_User->save_filter($_GET);
+        $user_id = @$_GET['user_id'];
+        $this->_User->check_exist_by_user_id($user_id);
+        $this->_Location->check_time_last_send_coordinates($user_id);
+        $Filter = (array)$this->_User->get_user_filter($user_id);
+        $Filter['user_id'] = $user_id;
+        $sql_filter = $this->_Location->get_sql_for_filter_radius((float)@$Filter['radius'], $user_id);
+        /*if (!empty($_GET['radius']))
         {
             $sql_filter = $this->_Location->get_sql_for_filter_radius((float)@$_GET['radius'], @$_GET['user_account']);
         }
         else
         {
             $sql_filter = $this->_Location->get_sql_for_users_last_coords() . " AS `t_users_in_radius`";
-        }
-        $this->Result = $this->_User->get_users_by_filters($_GET, $sql_filter);
+        }*/
+        $this->Result = $this->_User->get_users_by_filters($Filter, $sql_filter);
     }
     
     public function action_default()
