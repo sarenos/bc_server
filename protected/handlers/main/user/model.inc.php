@@ -31,6 +31,7 @@ class MainUserModel extends MainModel
     
     public function action_update()
     {
+        $this->_User->set_data($_POST);
         $this->Result = $this->_User->update_data($_POST);
     }
     

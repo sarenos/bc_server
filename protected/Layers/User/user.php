@@ -205,7 +205,7 @@ class User extends EntityWithDB
     
     public function create()
     {
-        $this->set_user_account((string)@$this->_Data['user_account']);
+        $this->set_user_account($this->_get_data_field('user_account'));
         $this->_validate_data();
         $this->_add();
         $this->update_data();
@@ -213,9 +213,9 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _validate_data()
+    private function _validate_data($is_update = false)
     {
-        $this->_validate_account();
+        $this->_validate_account($is_update);
         $this->_validate_nick();
         $this->_validate_age($this->_get_data_field('age'));
         $this->_validate_sex($this->_get_data_field('sex'));
@@ -224,15 +224,19 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _validate_account()
+    private function _validate_account($is_update)
     {
         if (!$this->_is_valid_email($this->_user_account))
         {
             throw new ExceptionProcessing(2);
         }
-        if ($this->_is_exist())
+        if (!$is_update && $this->_is_exist())
         {
             throw new ExceptionProcessing(3);
+        }
+        if ($is_update && !$this->_is_exist())
+        {
+            throw new ExceptionProcessing(1);
         }
         return true;
     }
@@ -308,6 +312,15 @@ class User extends EntityWithDB
     /////////////////////////////////////////////////////////////////////////////
     
     public function update_data()
+    {
+        $this->set_user_account($this->_get_data_field('user_account'));
+        $this->_validate_data(true);
+        $this->_update();
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function _update()
     {
         $this->Fields['user_account']->set($this->_get_data_field('user_account'));
         $this->Fields['nick']->set($this->_get_data_field('nick'));
