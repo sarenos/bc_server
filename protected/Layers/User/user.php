@@ -208,36 +208,43 @@ class User extends EntityWithDB
         $this->set_user_account($this->_get_data_field('user_account'));
         $this->_validate_data();
         $this->_add();
-        $this->update_data();
+        $this->_update_for_create();
         return array('id' => (int)@$this->Fields['user_id']->get());
     }
     /////////////////////////////////////////////////////////////////////////////
     
     private function _validate_data($is_update = false)
     {
-        $this->_validate_account($is_update);
+        if (!$is_update)
+        {
+            $this->_validate_account();
+            $this->_validate_sex($this->_get_data_field('sex'));
+        }
+        else
+        {
+            $this->check_exist_by_user_id($this->_get_data_field('user_id'));
+        }
         $this->_validate_nick();
         $this->_validate_age($this->_get_data_field('age'));
-        $this->_validate_sex($this->_get_data_field('sex'));
         //$this->_validate_android_account($this->_get_data_field('android_account'));
         //$this->_validate_city($this->_get_data_field('city'));
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _validate_account($is_update)
+    private function _validate_account()
     {
         if (!$this->_is_valid_email($this->_user_account))
         {
             throw new ExceptionProcessing(2);
         }
-        if (!$is_update && $this->_is_exist())
+        if ($this->_is_exist())
         {
             throw new ExceptionProcessing(3);
         }
-        if ($is_update && !$this->_is_exist())
+        /*if ($is_update && !$this->_is_exist())
         {
             throw new ExceptionProcessing(1);
-        }
+        }*/
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -313,19 +320,24 @@ class User extends EntityWithDB
     
     public function update_data()
     {
-        $this->set_user_account($this->_get_data_field('user_account'));
         $this->_validate_data(true);
-        $this->_update();
+        $this->_update_user();
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function _update()
+    private function _update_for_create()
     {
         $this->Fields['user_account']->set($this->_get_data_field('user_account'));
+        $this->Fields['sex']->set($this->_get_data_field('sex'));
+        $this->_update_user();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _update_user()
+    {
         $this->Fields['nick']->set($this->_get_data_field('nick'));
         $this->Fields['age']->set($this->_get_data_field('age'));
-        $this->Fields['sex']->set($this->_get_data_field('sex'));
         $this->Fields['android_account']->set($this->_get_data_field('android_account'));
         //$this->Fields['phone']->set(trim((string)@$data['phone']));
         //$this->Fields['vk_id']->set(trim((string)@$data['vk_id']));
@@ -459,17 +471,55 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function save_filter($Data)
+    /*private function _save_filter($Data)
     {
-        $this->_set_user_by_account((string)@$Data['user_account']);
-        $this->_set_filter_value($this->_remove_excess_from_data($Data));
-    }
+        //$this->_set_user_by_id((string)@$Data['user_id']);
+        
+    }*/
     /////////////////////////////////////////////////////////////////////////////
     
     public function get_user_filter($user_id)
     {
         $this->_set_user_by_id($user_id);
         return $this->_get_filter_value();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function set_user_filter($Data)
+    {
+        $this->_set_user_by_id($Data['user_id']);
+        $this->_validate_filter_data($Data);
+        $this->_save_filter($this->_remove_excess_from_data($Data));
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _validate_filter_data($Data)
+    {
+        $this->check_exist_by_user_id((int)@$Data['user_id']);
+        $this->_validate_filter_sex((string)@$Data['sex']);
+        $this->_validate_filter_age(@$Data['minAge'], @$Data['maxAge']);
+        //$this->check_filter_radius((int)@$Data['radius']);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _validate_filter_sex($sex)
+    {
+        if ($sex == 'm' || $sex == 'f' || $sex == 'all')
+        {
+            return true;
+        }
+        throw new ExceptionProcessing(8);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _validate_filter_age($minAge, $maxAge)
+    {
+        if ($sex == 'm' || $sex == 'f' || $sex == 'all')
+        {
+            return true;
+        }
+        throw new ExceptionProcessing(8);
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -488,13 +538,13 @@ class User extends EntityWithDB
     
     private function _remove_excess_from_data($Data)
     {
-        unset($Data['user_account']);
-        unset($Data['action']);
+        unset($Data['user_id']);
+        unset($Data['go']);
         return json_encode($Data);
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _set_filter_value($Filter_value)
+    private function _save_filter($Filter_value)
     {
         $this->Fields['filter']->set($Filter_value);
         $this->DBHandler->update();
