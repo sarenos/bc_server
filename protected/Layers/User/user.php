@@ -499,7 +499,7 @@ class User extends EntityWithDB
         $this->check_exist_by_user_id((int)@$Data['user_id']);
         $this->_validate_filter_sex((string)@$Data['sex']);
         $this->_validate_filter_age(@$Data['minAge'], @$Data['maxAge']);
-        //$this->check_filter_radius((int)@$Data['radius']);
+        $this->_validate_filter_radius(@$Data['radius']);
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -515,11 +515,23 @@ class User extends EntityWithDB
     
     private function _validate_filter_age($minAge, $maxAge)
     {
-        if ($sex == 'm' || $sex == 'f' || $sex == 'all')
+        if (!is_numeric($minAge) || !is_numeric($maxAge)
+                || ($minAge > $maxAge)
+                || ((int)$minAge < 14 || (int)$maxAge > 99))
         {
-            return true;
+            throw new ExceptionProcessing(7);
         }
-        throw new ExceptionProcessing(8);
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _validate_filter_radius($radius)
+    {
+        if (!is_numeric($radius) || (float)$radius < 1 || (float)$radius > 20)
+        {
+            throw new ExceptionProcessing(23);
+        }
+        return true;
     }
     /////////////////////////////////////////////////////////////////////////////
     

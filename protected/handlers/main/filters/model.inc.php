@@ -21,6 +21,11 @@ class MainFiltersModel extends MainModel
         $this->Result = array('filter' => $this->_User->get_user_filter(@$_GET['user_id']));
     }
 
+    public function action_set_filter()
+    {
+        $this->Result = $this->_User->set_user_filter($_POST);
+    }
+
     public function action_get_users()
     {
         $user_id = @$_GET['user_id'];
