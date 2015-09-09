@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 31, 2015 at 07:04 PM
+-- Generation Time: Sep 08, 2015 at 06:01 PM
 -- Server version: 5.5.29-0ubuntu0.12.04.2
 -- PHP Version: 5.5.27-1+deb.sury.org~precise+1
 
@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS `bc_connections` (
 --
 
 CREATE TABLE IF NOT EXISTS `bc_friends` (
-  `user_from` varchar(50) NOT NULL,
-  `user_to` varchar(50) NOT NULL,
+  `user1` bigint(30) unsigned NOT NULL,
+  `user2` bigint(30) unsigned NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `dt_create` datetime NOT NULL,
   `dt_status` datetime DEFAULT NULL
@@ -127,7 +127,7 @@ ALTER TABLE `bc_connections`
 -- Indexes for table `bc_friends`
 --
 ALTER TABLE `bc_friends`
- ADD PRIMARY KEY (`user_from`,`user_to`);
+ ADD PRIMARY KEY (`user1`,`user2`);
 
 --
 -- Indexes for table `bc_locations`

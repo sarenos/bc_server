@@ -81,9 +81,15 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function is_exist_by_user_id($user_id)
+    {
+        return '' != $this->get_nick_by_id($user_id);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function check_exist_by_user_id($user_id)
     {
-        if ('' == $this->get_nick_by_id($user_id))
+        if (!$this->is_exist_by_user_id($user_id))
         {
             throw new ExceptionProcessing(11);
         }
@@ -104,6 +110,19 @@ class User extends EntityWithDB
         $this->Fields['user_id']->set($user_id);
         $this->load_by_field('user_id');
         return $this->Fields['photo']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_user_data_by_id($user_id)
+    {
+        $this->Fields['user_id']->set($user_id);
+        $this->load_by_field('user_id');
+        return array(
+            'nick'  => $this->Fields['nick']->get(),
+            'age'   => $this->Fields['age']->get(),
+            'sex'   => $this->Fields['sex']->get(),
+            'photo' => $this->Fields['photo']->get()
+        );
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -209,7 +228,7 @@ class User extends EntityWithDB
         $this->_validate_data();
         $this->_add();
         $this->_update_for_create();
-        return array('id' => (int)@$this->Fields['user_id']->get());
+        return array('user_id' => (int)@$this->Fields['user_id']->get());
     }
     /////////////////////////////////////////////////////////////////////////////
     
