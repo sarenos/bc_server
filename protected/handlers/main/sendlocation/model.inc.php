@@ -63,4 +63,9 @@ class MainSendLocationModel extends MainModel
         }
         return true;
     }
+    
+    public function action_default()
+    {
+        throw new ExceptionProcessing(100);
+    }
 }
