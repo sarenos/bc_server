@@ -87,6 +87,35 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function check_user_id_isset($user_id, $num)
+    {
+        if ('' == $this->get_nick_by_id($user_id))
+        {
+            if (!$num)
+            {
+                throw new ExceptionProcessing(11);
+            }
+            if ($num == 1)
+            {
+                throw new ExceptionProcessing(30);
+            }
+            if ($num == 2)
+            {
+                throw new ExceptionProcessing(31);
+            }
+            if ($num == 3)
+            {
+                throw new ExceptionProcessing(42);
+            }
+            if ($num == 4)
+            {
+                throw new ExceptionProcessing(43);
+            }
+        }
+        return true;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function check_exist_by_user_id($user_id)
     {
         if (!$this->is_exist_by_user_id($user_id))

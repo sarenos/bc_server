@@ -1,11 +1,13 @@
 <?php
 
 require_once LAYERS_DIR . '/Entity/entity_with_db.inc.php';
+require_once LAYERS_DIR . '/User/user.php';
 
 class Connections extends EntityWithDB
 {
     private $_user1, $_user2;
     private $_key_users = array('user1', 'user2');
+    private $_User;
     /////////////////////////////////////////////////////////////////////////////
     
     public function &get_all_fields_instances()
@@ -26,8 +28,25 @@ class Connections extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function set_users($user1, $user2)
+    public function __construct()
     {
+        parent::__construct();
+        $this->_User = new User();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function set_users($user1, $user2, $message_with_friend = 0)
+    {
+        if (!$message_with_friend)
+        {
+            $this->_User->check_user_id_isset($user1, 1);
+            $this->_User->check_user_id_isset($user2, 2);
+        }
+        else
+        {
+            $this->_User->check_user_id_isset($user1, 3);
+            $this->_User->check_user_id_isset($user2, 4);
+        }
         $this->_user1 = $this->_get_user1($user1, $user2);
         $this->_user2 = $this->_get_user2($user1, $user2);
         return $this;
@@ -36,6 +55,7 @@ class Connections extends EntityWithDB
     
     public function set_one_user($user)
     {
+        $this->_User->check_user_id_isset($user, 0);
         $this->_user1 = $user;
         return $this;
     }

@@ -38,6 +38,10 @@ class Messages extends EntityWithDB
 
     public function send($connection_id)
     {
+        if (empty(trim((string)@$_POST['message'])))
+        {
+            throw new ExceptionProcessing(40);
+        }
         $this->Fields['connection_id']->set($connection_id);
         $this->Fields['status']->set($this->_get_status_new());
         $this->Fields['message']->set($this->_Data['message']);
@@ -128,10 +132,20 @@ class Messages extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
 
-    public function get_data_by_message_id($message_id)
+    private function _is_exist_message($message_id)
     {
         $this->Fields['id']->set($message_id);
         $this->load_by_field('id');
+        return 0 != $this->Fields['connection_id']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    public function get_data_by_message_id($message_id)
+    {
+        if (!$this->_is_exist_message($message_id))
+        {
+            throw new ExceptionProcessing(41);
+        }
         return array(
             'connection_id' => $this->Fields['connection_id']->get(),
             'status'        => $this->Fields['status']->get()

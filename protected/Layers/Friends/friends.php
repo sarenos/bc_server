@@ -19,7 +19,6 @@ class Friends extends EntityWithDB
         $result['dt_status']        = new FieldDateTime();
         
         $this->DBHandler->no_auto_increment_primary();
-        $this->_User = new User();
         
         return $result;
     }
@@ -32,31 +31,20 @@ class Friends extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function set_users($user1, $user2)
+    public function __construct()
     {
-        $this->_check_user_id_isset($user1, 1);
-        $this->_check_user_id_isset($user2, 2);
-        $this->_user1 = $this->_get_user1($user1, $user2);
-        $this->_user2 = $this->_get_user2($user1, $user2);
-        return $this;
+        parent::__construct();
+        $this->_User = new User();
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _check_user_id_isset($user_id, $num)
+    public function set_users($user1, $user2)
     {
-        if ('' == $this->_User->get_nick_by_id($user_id))
-        {
-            if (!$num)
-            {
-                throw new ExceptionProcessing(11);
-            }
-            if ($num == 1)
-            {
-                throw new ExceptionProcessing(30);
-            }
-            throw new ExceptionProcessing(31);
-        }
-        return true;
+        $this->_User->check_user_id_isset($user1, 1);
+        $this->_User->check_user_id_isset($user2, 2);
+        $this->_user1 = $this->_get_user1($user1, $user2);
+        $this->_user2 = $this->_get_user2($user1, $user2);
+        return $this;
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -99,7 +87,7 @@ class Friends extends EntityWithDB
     
     public function set_user1($user1)
     {
-        $this->_check_user_id_isset($user1, 0);
+        $this->_User->check_user_id_isset($user1, 0);
         $this->_user1 = $user1;
         return $this;
     }

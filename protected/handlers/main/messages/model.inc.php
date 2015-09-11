@@ -51,8 +51,8 @@ class MainMessagesModel extends MainModel
 
     public function action_one_friend()
     {
-        $this->_Connections->set_users((float)@$_GET['user'], (float)@$_GET['friend']);
-$this->_Messages->set_data($_GET);
+        $this->_Connections->set_users((float)@$_GET['user'], (float)@$_GET['friend'], 1);
+        $this->_Messages->set_data($_GET);
         $this->Result = array('data' =>
                             $this->_Messages
                                     ->get_list_with_one_friend(
@@ -66,10 +66,19 @@ $this->_Messages->set_data($_GET);
         $Res_data = array();
         foreach ($this->_Connections->get_list_by_one_user() as $Message_data)
         {
-            $Message_data['name'] = $this->_User->get_nick_by_id($Message_data['id']);
+            if (!$this->_User->is_exist_by_user_id($Message_data['id']))
+            {
+                continue;
+            }
+            $Res_data[] = 
+                array_merge(
+                    $Message_data,
+                    $this->_User->get_user_data_by_id($Message_data['id']));
+
+            /*$Message_data['nick'] = $this->_User->get_nick_by_id($Message_data['id']);
             $Message_data['photo'] = $this->_User->get_photo_by_id($Message_data['id']);
-$Message_data['age'] = $this->_User->get_age_by_id($Message_data['id']);
-            $Res_data[] = $Message_data;
+            $Message_data['age'] = $this->_User->get_age_by_id($Message_data['id']);
+            $Res_data[] = $Message_data;*/
         }
         $this->Result = array('data' => $Res_data);
     }
