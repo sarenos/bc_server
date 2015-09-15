@@ -19,7 +19,7 @@ class MainUserModel extends MainModel
 
     public function action_get_info()
     {
-        $this->_User->set_user_account((string)@$_GET['user_account']);
+        $this->_User->set_data($_GET);
         $this->Result = $this->_User->get_info();
     }
     
@@ -37,7 +37,7 @@ class MainUserModel extends MainModel
     
     public function action_delete()
     {
-        $this->_User->set_user_account((string)@$_POST['user_account']);
+        $this->_User->set_data($_POST);
         $this->Result = $this->_User->delete();
     }
     

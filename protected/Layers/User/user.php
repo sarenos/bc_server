@@ -181,19 +181,13 @@ class User extends EntityWithDB
     
     public function get_info()
     {
-        $res = $this->_validate_account();
-        if (empty($res))
+        $user_id = $this->_get_data_field('user_id');
+        if (!$this->is_exist_by_user_id($user_id))
         {
-            if (!$this->_is_exist())
-            {
-                //$this->_add();
-                return array('data' => null);
-            }
-            
-            $this->DBHandler->db->exec_query("SELECT * FROM bc_users_info WHERE user_account LIKE '".$this->_user_account."'");
-            return array('data' => $this->DBHandler->db->get_all_data());
+            return array('data' => null);
         }
-        return $res;
+        $this->DBHandler->db->exec_query("SELECT * FROM bc_users_info WHERE user_id LIKE '$user_id'");
+        return array('data' => $this->DBHandler->db->get_all_data());
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -399,13 +393,8 @@ class User extends EntityWithDB
     
     public function delete()
     {
-        if (!$this->_is_exist())
-        {
-            return array(
-                    'status'    => 4,
-                    'statusMsg' => 'Пользователя с таким аккаунтом нет в системе!');
-        }
-        $this->DBHandler->delete_by_field('user_account');
+        $this->check_exist_by_user_id($this->_get_data_field('user_id'));
+        $this->DBHandler->delete_by_field('user_id');
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////
