@@ -6,6 +6,12 @@ class User extends EntityWithDB
 {
     private $_user_account = '';
     private $_Data = null;
+    private $_fields_list_for_update = array(
+        'nick',
+        'age',
+        'android_account',
+        'city'
+    );
     /////////////////////////////////////////////////////////////////////////////
     
     public function &get_all_fields_instances()
@@ -363,7 +369,7 @@ class User extends EntityWithDB
     public function update_data()
     {
         $this->_validate_data(true);
-        $this->_update_user();
+        $this->_update_user($this->_fields_list_for_update);
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -372,11 +378,16 @@ class User extends EntityWithDB
     {
         $this->Fields['user_account']->set($this->_get_data_field('user_account'));
         $this->Fields['sex']->set($this->_get_data_field('sex'));
-        $this->_update_user();
+        $this->Fields['dt_create']->now();
+        $this->_update_user(
+                    array_merge(
+                            array('user_account', 'sex', 'dt_create'),
+                            $this->_fields_list_for_update
+                    ));
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _update_user()
+    private function _update_user($fields_list)
     {
         $this->Fields['nick']->set($this->_get_data_field('nick'));
         $this->Fields['age']->set($this->_get_data_field('age'));
@@ -385,8 +396,7 @@ class User extends EntityWithDB
         //$this->Fields['vk_id']->set(trim((string)@$data['vk_id']));
         //$this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
         $this->Fields['city']->set($this->_get_data_field('city'));
-        $this->Fields['dt_create']->now();
-        $this->DBHandler->update();
+        $this->DBHandler->update_only_fields_list($fields_list);
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////

@@ -282,6 +282,18 @@ function get_update_data_part()
 }
 ///////////////////////////////////////////////////////////////////////////
 
+function get_update_fields_list($fields_list)
+{
+     $result = $this-> get_update_start_template();
+     foreach ($fields_list as $key)
+     {
+          $result .= "`$key` = ".$this-> get_escaped($key).",\n";
+     }
+     $result = substr($result, 0, -2);
+     return $result;
+}
+///////////////////////////////////////////////////////////////////////////
+
 function update()
 {
      $sql = $this-> get_update_data_part().$this-> get_primary_where();
@@ -292,6 +304,14 @@ function update()
 function update_by_fields_list($fields_list)
 {
      $sql = $this-> get_update_data_part().$this-> get_fields_list_where($fields_list);
+     $this-> db-> exec_query($sql);
+}
+/////////////////////////////////////////////////////////////////////////////
+
+function update_only_fields_list($fields_list)
+{
+     $sql = $this-> get_update_fields_list($fields_list).$this-> get_primary_where();
+     var_dump($sql);
      $this-> db-> exec_query($sql);
 }
 ///////////////////////////////////////////////////////////////////////////
