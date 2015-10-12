@@ -226,6 +226,14 @@ class Friends extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
 
+    public function get_users_status($user, $user_get_status)
+    {
+        $this->set_users($user, $user_get_status);
+        $this->set_is_from_user1($user > $user_get_status);
+        return $this->status_friend();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
     public function status_friend()
     {
         if ($this->_is_friends()

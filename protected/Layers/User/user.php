@@ -267,12 +267,14 @@ class User extends EntityWithDB
         {
             $this->_validate_account();
             $this->_validate_sex($this->_get_data_field('sex'));
+            $this->_validate_nick_for_create();
         }
         else
         {
             $this->check_exist_by_user_id($this->_get_data_field('user_id'));
+            $this->_validate_nick_for_update();
         }
-        $this->_validate_nick();
+        $this->_validate_nick_general();
         $this->_validate_age($this->_get_data_field('age'));
         //$this->_validate_android_account($this->_get_data_field('android_account'));
         //$this->_validate_city($this->_get_data_field('city'));
@@ -307,13 +309,33 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _validate_nick()
+    private function _validate_nick_for_create()
     {
+        if ('' != $this->_get_user_account_by_nick($this->_get_data_field('nick')))
+        {
+            throw new ExceptionProcessing(4);
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _validate_nick_for_update()
+    {
+        if ('' != $this->_get_user_account_by_nick($this->_get_data_field('nick'))
+                && $this->_get_data_field('nick') != $this->get_nick_by_id($this->_get_data_field('user_id')))
+        {
+            throw new ExceptionProcessing(4);
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _validate_nick_general()
+    {
+        /*$nick = $this->get_nick_by_id($this->_get_data_field('user_id'));
         $user_account_by_nick = $this->_get_user_account_by_nick($this->_get_data_field('nick'));
         if ($user_account_by_nick != '' && $user_account_by_nick != $this->_get_data_field('user_account'))
         {
             throw new ExceptionProcessing(4);
-        }
+        }*/
         if (!preg_match("/^[A-Za-z0-9_\.-]+$/", $this->_get_data_field('nick')))
         {
             throw new ExceptionProcessing(5);
@@ -482,7 +504,7 @@ class User extends EntityWithDB
         $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
                 . " FROM bc_users_info JOIN $sql_join"
                 . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where");
-        return array('data' => $this->DBHandler->db->get_all_data());
+        return $this->DBHandler->db->get_all_data();
     }
     /////////////////////////////////////////////////////////////////////////////
     

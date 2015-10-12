@@ -6,14 +6,14 @@ require_once LAYERS_DIR . '/Location/location.php';
 
 class MainFiltersModel extends MainModel
 {
-    private $_User;
-    private $_Location;
+    private $_User, $_Location, $_Friends;
 
     public function __construct()
     {
         parent::__construct();
         $this->_User = new User();
         $this->_Location = new Location();
+        $this->_Friends = new Friends();
     }
 
     public function action_get_filter()
@@ -34,7 +34,14 @@ class MainFiltersModel extends MainModel
         $Filter = (array)$this->_User->get_user_filter($user_id);
         $Filter['user_id'] = $user_id;
         $sql_filter = $this->_Location->get_sql_for_filter_radius((float)@$Filter['radius'], $user_id);
-        $this->Result = $this->_User->get_users_by_filters($Filter, $sql_filter);
+        
+        $data_res = $this->_User->get_users_by_filters($Filter, $sql_filter);
+        foreach ($data_res as $user_data)
+        {
+            $data_res = array_merge($user_data,
+                            $this->_Friends->get_users_status($user_id, $user_data['user_id']));
+        }
+        $this->Result = array('data' => $data_res);
     }
 
     public function action_default()
