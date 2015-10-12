@@ -69,15 +69,17 @@ class MainFriendsModel extends MainModel
     public function action_status_friend()
     {
         $this->Result = $this->_Friends->get_users_status(
-                                            (float)@$_POST['user_from'],
-                                            (float)@$_POST['user_to']
+                                            (float)@$_GET['user_from'],
+                                            (float)@$_GET['user_to']
                                         );
     }
     
     public function action_was_invitation()
     {
-        $this->_set_users_post();
-        $this->_set_is_from_user1_for_confirm();
+        $this->_Friends->set_users(
+                            (float)@$_GET['user_from'],
+                            (float)@$_GET['user_to']);
+        $this->_Friends->set_is_from_user1((float)@$_GET['user_from'] > (float)@$_GET['user_to']);
         $this->Result = $this->_Friends->was_invitation();
     }
 
