@@ -2,16 +2,18 @@
 
 require_once LAYERS_DIR . '/Friends/friends.php';
 require_once LAYERS_DIR . '/User/user.php';
+require_once LAYERS_DIR . '/Location/location.php';
 
 class MainFriendsModel extends MainModel
 {
-    private $_Friends, $_User;
+    private $_Friends, $_User, $_Location;
 
     public function __construct()
     {
         parent::__construct();
         $this->_Friends = new Friends();
         $this->_User = new User();
+        $this->_Location = new Location();
     }
 
     public function action_invite()
@@ -54,7 +56,8 @@ class MainFriendsModel extends MainModel
             $Res_data[] = 
                 array_merge(
                     $Friend_data,
-                    $this->_User->get_user_data_by_id($Friend_data['user_id']));
+                    $this->_User->get_user_data_by_id($Friend_data['user_id']),
+                    $this->_Location->get_user_coordinates($Friend_data['user_id']));
         }
         $this->Result = array('data' => $Res_data);
     }

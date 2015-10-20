@@ -16,7 +16,7 @@ class Location extends EntityWithDB
     
     public function &get_all_fields_instances()
     {
-        $result['id']           = new FieldInt();
+        $result['user_id']      = new FieldInt();
         $result['latitude']     = new FieldFloat();
         $result['longitude']    = new FieldFloat();
         $result['date_crt']     = new FieldDateTime();
@@ -112,6 +112,51 @@ class Location extends EntityWithDB
     {
         $this->_DBHandler->exec_query("SELECT MAX(date_crt) AS last_dt_send FROM `bc_locations` WHERE user_id=$user_id");
         return $this->_DBHandler->get_data();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    /*public function save_coordinates($Data)
+    {
+        if (!$this->_is_user_exist((int)@$Data['user']))
+        {
+            $this->_insert_record($Data);
+        }
+        $this->_update_record($Data);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _is_user_exist($user)
+    {
+        $this->Fields['user_id']->set($user);
+        $this->load_by_field('user_id');
+        return 0 != $this->Fields['id']->get();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _insert_record($Data)
+    {
+        $this->Fields['latitude']->set((float)@$Data['latitude']);
+        $this->Fields['longitude']->set((float)@$Data['user']);
+        $this->Fields['date_crt']->now();
+        $this->Fields['user_id']->set((int)@$Data['user']);
+        $this->DBHandler->insert();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _update_record($Data)
+    {
+        
+    }*/
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_user_coordinates($user_id)
+    {
+        $this->Fields['user_id']->set($user_id);
+        $this->load_by_field('user_id');
+        return array(
+            'latitude'  => $this->Fields['latitude']->get(),
+            'longitude' => $this->Fields['longitude']->get()
+        );
     }
     /////////////////////////////////////////////////////////////////////////////
 }
