@@ -193,9 +193,9 @@ class Friends extends EntityWithDB
         $res_rec = array();
         foreach ($this->DBHandler->db->get_all_data() as $record)
         {
-            if (($record['status'] != -2 && $field_query != 'user1')
-                    || ($record['status'] != -1 && $field_query != 'user2')
-                    || $record['status'] >= 0)
+            if (($record['status'] == -2 && $field_query == 'user1')
+                    || ($record['status'] == -1 && $field_query == 'user2')
+                    || $record['status'] > 0)
             {
                 $res_rec[] = array(
                                 'user_id'   => $record[$field_res],
@@ -210,7 +210,7 @@ class Friends extends EntityWithDB
     private function _is_friend($status)
     {
         // true - friend; false - request to friend
-        return $status >= 0;
+        return $status > 0;
     }
     /////////////////////////////////////////////////////////////////////////////
 

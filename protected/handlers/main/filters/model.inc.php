@@ -35,13 +35,14 @@ class MainFiltersModel extends MainModel
         $Filter['user_id'] = $user_id;
         $sql_filter = $this->_Location->get_sql_for_filter_radius((float)@$Filter['radius'], $user_id);
         
-        $data_res = $this->_User->get_users_by_filters($Filter, $sql_filter);
-        foreach ($data_res as $user_data)
+        $Data_res = array();
+        foreach ($this->_User->get_users_by_filters($Filter, $sql_filter)
+                    as $user_data)
         {
-            $data_res = array_merge($user_data,
+            $Data_res[] = array_merge($user_data,
                             $this->_Friends->get_users_status($user_id, $user_data['user_id']));
         }
-        $this->Result = array('data' => $data_res);
+        $this->Result = array('data' => $Data_res);
     }
 
     public function action_default()
