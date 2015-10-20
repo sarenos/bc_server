@@ -193,7 +193,11 @@ class User extends EntityWithDB
             return array('data' => null);
         }
         $this->DBHandler->db->exec_query("SELECT * FROM bc_users_info WHERE user_id LIKE '$user_id'");
-        return array('data' => $this->DBHandler->db->get_all_data());
+        foreach ($this->DBHandler->db->get_all_data() as $user_data)
+        {
+            $user_data['photo'] = $this->_get_photo_path($user_data['user_id']);
+        }
+        return array('data' => $user_data);
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -629,6 +633,29 @@ class User extends EntityWithDB
     {
         $this->Fields['filter']->set($Filter_value);
         $this->DBHandler->update();
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function update_photo($Data)
+    {
+        if (isset($Data['photo']))
+        {
+            $photoB64 = $Data['photo'];
+
+            $url = $this->_get_photo_path((string)@$Data['user_id']);
+            $ifp = fopen($url, "wb");
+
+            fwrite($ifp, base64_decode($photoB64 ));
+            fclose($ifp);
+            return true;
+        }
+        throw new ExceptionProcessing(12);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_photo_path($user_id)
+    {
+        return "static/img/$user_id.jpeg";
     }
     /////////////////////////////////////////////////////////////////////////////
 }

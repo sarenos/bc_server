@@ -41,6 +41,11 @@ class MainUserModel extends MainModel
         $this->Result = $this->_User->delete();
     }
     
+    public function action_update_photo()
+    {
+        $this->Result = $this->_User->update_photo($_POST);
+    }
+    
     /*public function action_filter()
     {
         //$this->_User->save_filter($_GET);
