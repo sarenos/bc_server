@@ -154,8 +154,8 @@ class Location extends EntityWithDB
         $this->Fields['user_id']->set($user_id);
         $this->load_by_field('user_id');
         return array(
-            'latitude'  => $this->Fields['latitude']->get(),
-            'longitude' => $this->Fields['longitude']->get()
+            'lat' => $this->Fields['latitude']->get(),
+            'lng' => $this->Fields['longitude']->get()
         );
     }
     /////////////////////////////////////////////////////////////////////////////

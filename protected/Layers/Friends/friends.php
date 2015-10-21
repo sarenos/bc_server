@@ -210,7 +210,7 @@ class Friends extends EntityWithDB
     private function _is_friend($status)
     {
         // true - friend; false - request to friend
-        return $status > 0;
+        return ($status > 0) ? 1 : 0;
     }
     /////////////////////////////////////////////////////////////////////////////
 

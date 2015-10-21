@@ -195,7 +195,7 @@ class User extends EntityWithDB
         $this->DBHandler->db->exec_query("SELECT * FROM bc_users_info WHERE user_id LIKE '$user_id'");
         foreach ($this->DBHandler->db->get_all_data() as $user_data)
         {
-            $user_data['photo'] = $this->_get_photo_path($user_data['user_id']);
+            $user_data['photo'] = $this->_get_existing_photo_path($user_data['user_id']);
         }
         return array('data' => $user_data);
     }
@@ -656,6 +656,16 @@ class User extends EntityWithDB
     private function _get_photo_path($user_id)
     {
         return "static/img/$user_id.jpeg";
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_existing_photo_path($user_id)
+    {
+        if (file_exists($this->_get_photo_path($user_id)))
+        {
+            return $this->_get_photo_path($user_id);
+        }
+        return "";
     }
     /////////////////////////////////////////////////////////////////////////////
 }
