@@ -91,6 +91,7 @@ class MainFriendsModel extends MainModel
         $this->_Friends->set_users(
                             (float)@$_POST['user_from'],
                             (float)@$_POST['user_to']);
+        $this->_Friends->check_users_identical();
     }
 
     private function _set_is_from_user1_for_invite_delete()

@@ -68,6 +68,15 @@ class Friends extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    public function check_users_identical()
+    {
+        if ($this->_user1 == $this->_user2)
+        {
+            throw new ExceptionProcessing(36);
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function set_is_from_user1($is_from_user1)
     {
         $this->_is_from_user1 = $is_from_user1;
