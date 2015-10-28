@@ -51,6 +51,7 @@ class MainMessagesModel extends MainModel
 
     public function action_one_friend()
     {
+        $this->_Messages->set_page_num((int)@$_GET['page']);
         $this->_Connections->set_users((float)@$_GET['user'], (float)@$_GET['friend'], 1);
         $this->_Messages->set_data($_GET);
         $this->Result = array('data' =>
@@ -62,6 +63,7 @@ class MainMessagesModel extends MainModel
     
     public function action_list_users()
     {
+        $this->_Connections->set_page_num((int)@$_GET['page']);
         $this->_Connections->set_one_user((float)@$_GET['user']);
         $Res_data = array();
         foreach ($this->_Connections->get_list_by_one_user() as $Message_data)

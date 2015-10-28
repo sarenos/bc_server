@@ -52,6 +52,7 @@ class User extends EntityWithDB
         $this-> create_standart_db_handler('bc_users_info');
         $this-> create_tuple();
         $this-> DBHandler-> set_primary_key('user_id');
+        $this->set_per_page(PER_PAGE_USERS);
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -507,7 +508,8 @@ class User extends EntityWithDB
         $sql_where .= "bc_users_info.user_id NOT LIKE '" . @$Filter['user_id'] . "'";
         $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
                 . " FROM bc_users_info JOIN $sql_join"
-                . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where");
+                . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where"
+                . $this->get_limit_part());
         return $this->DBHandler->db->get_all_data();
     }
     /////////////////////////////////////////////////////////////////////////////

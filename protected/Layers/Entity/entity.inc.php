@@ -34,7 +34,9 @@ require_once LAYERS_DIR.'/Fields/ip.inc.php';
 require_once LAYERS_DIR.'/Fields/ip_int.inc.php';
 require_once LAYERS_DIR.'/Fields/currency.inc.php';
 
-class Entity
+require_once LAYERS_DIR.'/Paging/paged_lister.inc.php';
+
+class Entity extends PagedLister
 {
 var $Fields = array();
 var $Keys   = array();
@@ -50,6 +52,7 @@ function Entity()
 
 function create_objects()
 {
+     parent::__construct();
      $this-> Setter  = new WalkerSetArray();
      $this-> Emptier = new WalkerMakeEmpty();
 }

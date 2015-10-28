@@ -32,6 +32,7 @@ class Connections extends EntityWithDB
     {
         parent::__construct();
         $this->_User = new User();
+        $this->set_per_page(PER_PAGE_MESSAGES);
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -103,6 +104,7 @@ class Connections extends EntityWithDB
     {
         $this->DBHandler->db->exec_query(
                 "SELECT * FROM `bc_connections` WHERE `".$user_name."` = '".$this->_user1."'"
+                . $this->get_limit_part()
         );
         $res = array();
         foreach ($this->DBHandler->db->get_all_data() as $user)

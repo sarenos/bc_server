@@ -1,6 +1,7 @@
 <?php
 
 require_once LAYERS_DIR . '/Entity/entity_with_db.inc.php';
+require_once LAYERS_DIR.'/Paging/sql_pager.inc.php';
 
 class Messages extends EntityWithDB
 {
@@ -26,6 +27,7 @@ class Messages extends EntityWithDB
         $this-> create_standart_db_handler('bc_messages');
         $this-> create_tuple();
         $this-> DBHandler-> set_primary_key('id');
+        $this->set_per_page(PER_PAGE_MESSAGES);
     }
     /////////////////////////////////////////////////////////////////////////////
 
@@ -79,6 +81,7 @@ class Messages extends EntityWithDB
     {
         $this->DBHandler->db->exec_query(
                 "SELECT * FROM `bc_messages` WHERE `connection_id` = '$connection_id' ORDER BY `dt_create`"
+                . $this->get_limit_part()
         );
         $user_msg_status = $this->_get_user_message_status();
         $all_messages = array();

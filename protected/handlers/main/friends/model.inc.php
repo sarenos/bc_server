@@ -46,6 +46,7 @@ class MainFriendsModel extends MainModel
     public function action_get_list()
     {
         $this->_set_user_get();
+        $this->_Friends->set_page_num((int)@$_GET['page']);
         $Res_data = array();
         foreach ($this->_Friends->get_list() as $Friend_data)
         {

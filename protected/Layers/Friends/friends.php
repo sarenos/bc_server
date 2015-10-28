@@ -35,6 +35,7 @@ class Friends extends EntityWithDB
     {
         parent::__construct();
         $this->_User = new User();
+        $this->set_per_page(PER_PAGE_FRIENDS);
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -198,6 +199,7 @@ class Friends extends EntityWithDB
     {
         $this->DBHandler->db->exec_query(
                 "SELECT * FROM `bc_friends` WHERE `$field_query` = '".$this->_user1."'"
+                . $this->get_limit_part()
         );
         $res_rec = array();
         foreach ($this->DBHandler->db->get_all_data() as $record)
@@ -269,6 +271,21 @@ class Friends extends EntityWithDB
         return array('result' =>
                         ($this->_is_friends()
                             && ($this->_get_status() < 0 && $this->_get_status() * -1 == $this->_get_positive_status())));
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    /* TODO: remove */
+    public function get_friends_id($user_id)
+    {
+        $this->DBHandler->db->exec_query(
+                "(SELECT `user1` AS `friends` FROM `bc_friends` WHERE `user2` = '$user_id' AND `status` = 1)
+                 UNION (SELECT `user2` AS `friends` FROM `bc_friends` WHERE `user1` = '$user_id' AND `status` = 1)"
+        );
+        $friends = array();
+        foreach ($this->DBHandler->db->get_all_data() as $friend) {
+            $friends[] = $friend['friends'];
+        }
+        return $friends;
     }
     /////////////////////////////////////////////////////////////////////////////
 }

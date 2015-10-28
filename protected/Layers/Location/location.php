@@ -57,7 +57,7 @@ class Location extends EntityWithDB
         $lng = (float)@$coordinates['lng'];
         
         return "
-            (SELECT
+            (SELECT * FROM (SELECT
               *, (
                 6371 * acos (
                   cos ( radians($lat) )
@@ -67,22 +67,24 @@ class Location extends EntityWithDB
                   * sin( radians( lat ) )
                 )
               ) AS distance
-            FROM 
-                (SELECT * FROM " . $this->get_sql_for_users_last_coords() . " t_users_last_coords
-                WHERE `lat` >= " . ($lat - $radius_grad) . " AND `lat` <= " . ($lat + $radius_grad) . " AND `lng` >= " . ($lng - $radius_grad) . " AND `lng` <= " . ($lng + $radius_grad)
-                    . ") `t_users_close`
-            HAVING distance < $radius_km
+            FROM ("
+                . $this->get_sql_for_users_last_coords()
+                //(SELECT * FROM " . $this->get_sql_for_users_last_coords() . " t_users_last_coords
+                . " WHERE `latitude` >= " . ($lat - $radius_grad) . " AND `latitude` <= " . ($lat + $radius_grad) . " AND `longitude` >= " . ($lng - $radius_grad) . " AND `longitude` <= " . ($lng + $radius_grad)
+                    . ") `t_users_in_round`) `t_users_close_with_distance`
+            WHERE distance < $radius_km
             ORDER BY distance) `t_users_in_radius`";
     }
     /////////////////////////////////////////////////////////////////////////////
     
     public function get_sql_for_users_last_coords()
     {
-        return "(SELECT user_id, lat, lng FROM (
+        /*return "(SELECT user_id, lat, lng FROM (
                     SELECT user_id, date_crt, latitude AS lat, longitude AS lng
                     FROM `bc_locations`
                     ORDER BY date_crt DESC
-                    ) t_sort_dt GROUP BY user_id)";
+                    ) t_sort_dt GROUP BY user_id)";*/
+        return "SELECT user_id, latitude AS lat, longitude AS lng FROM `bc_locations`";
     }
     /////////////////////////////////////////////////////////////////////////////
 
