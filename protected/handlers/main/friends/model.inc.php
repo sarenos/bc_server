@@ -47,20 +47,16 @@ class MainFriendsModel extends MainModel
     {
         $this->_set_user_get();
         $this->_Friends->set_page_num((int)@$_GET['page']);
-        $Res_data = array();
+        /*$Res_data = array();
         foreach ($this->_Friends->get_list() as $Friend_data)
         {
             if (!$this->_User->is_exist_by_user_id($Friend_data['user_id']))
             {
                 continue;
             }
-            $Res_data[] = 
-                array_merge(
-                    $Friend_data,
-                    $this->_User->get_user_data_by_id($Friend_data['user_id']),
-                    $this->_Location->get_user_coordinates($Friend_data['user_id']));
-        }
-        $this->Result = array('data' => $Res_data);
+            $Res_data[] = $Friend_data;
+        }*/
+        $this->Result = array('data' => $this->_Friends->get_list());
     }
     
     public function action_delete()

@@ -95,21 +95,28 @@ class Connections extends EntityWithDB
     public function get_list_by_one_user()
     {
         return array_merge(
-                $this->_get_list_by_every_user('user1', 'user2'),
-                $this->_get_list_by_every_user('user2', 'user1'));
+                $this->_get_list_by_every_user(1, 2),
+                $this->_get_list_by_every_user(2, 1));
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _get_list_by_every_user($user_name, $user_find)
+    private function _get_list_by_every_user($num_user_main, $num_user_find)
     {
         $this->DBHandler->db->exec_query(
-                "SELECT * FROM `bc_connections` WHERE `".$user_name."` = '".$this->_user1."'"
+                "SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA
+                . "     , loc.date_crt > DATE_sub(NOW(), INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS online"
+                . " FROM `bc_locations` AS loc,"
+                . " `bc_users_info`"
+                . " JOIN ("
+                . "     SELECT con.user$num_user_find AS user FROM `bc_connections` AS con WHERE con.user$num_user_main = '".$this->_user1."'"
+                . " ) AS con_usr ON con_usr.user = `bc_users_info`.user_id"
+                . " WHERE `bc_users_info`.user_id = loc.user_id"
                 . $this->get_limit_part()
         );
         $res = array();
         foreach ($this->DBHandler->db->get_all_data() as $user)
         {
-            $res[] = ['id' => $user[$user_find]];
+            $res[] = $user;
         }
         return $res;
     }

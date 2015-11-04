@@ -189,29 +189,36 @@ class Friends extends EntityWithDB
     public function get_list()
     {
         return array_merge(
-                    $this->_load_by_user('user1', 'user2'),
-                    $this->_load_by_user('user2', 'user1')
+                    $this->_load_by_user(1, 2),
+                    $this->_load_by_user(2, 1)
                 );
     }
     /////////////////////////////////////////////////////////////////////////////
 
-    private function _load_by_user($field_query, $field_res)
+    private function _load_by_user($num_user1, $num_user2)
     {
         $this->DBHandler->db->exec_query(
-                "SELECT * FROM `bc_friends` WHERE `$field_query` = '".$this->_user1."'"
+                "SELECT fr.user$num_user1 AS user_id, " . User::SQL_USER_DATA
+                . ", loc.latitude AS lat, loc.longitude AS lng,"
+                . "fr.status, loc.date_crt > DATE_sub(NOW(), INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS online"
+                . " FROM `bc_locations` AS loc, `bc_users_info`"
+                . " JOIN (SELECT * FROM `bc_friends` WHERE user$num_user2 = '".$this->_user1."') AS fr"
+                . " ON `bc_users_info`.user_id = fr.user$num_user1 "
+                . "WHERE `bc_users_info`.user_id = loc.user_id"
                 . $this->get_limit_part()
         );
         $res_rec = array();
         foreach ($this->DBHandler->db->get_all_data() as $record)
         {
-            if (($record['status'] == -2 && $field_query == 'user1')
-                    || ($record['status'] == -1 && $field_query == 'user2')
+            if (($record['status'] == -2 && $num_user2 == 1)
+                    || ($record['status'] == -1 && $num_user2 == 2)
                     || $record['status'] > 0)
             {
-                $res_rec[] = array(
-                                'user_id'   => $record[$field_res],
-                                'friend'    => $this->_is_friend($record['status'])
-                            );
+                $res_rec[] = array_merge(
+                                $record,
+                                array(
+                                    'friend'    => $this->_is_friend($record['status'])
+                                ));
             }
         }
         return $res_rec;

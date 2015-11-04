@@ -12,6 +12,8 @@ class User extends EntityWithDB
         'android_account',
         'city'
     );
+    const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`";
+
     /////////////////////////////////////////////////////////////////////////////
     
     public function &get_all_fields_instances()
@@ -575,6 +577,7 @@ class User extends EntityWithDB
         $this->_validate_filter_sex((string)@$Data['sex']);
         $this->_validate_filter_age(@$Data['minAge'], @$Data['maxAge']);
         $this->_validate_filter_radius(@$Data['radius']);
+        $this->_validate_filter_show_offline($Data);
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -610,6 +613,18 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
+    private function _validate_filter_show_offline($Data)
+    {
+        if (!isset($Data['showOffline'])
+                || $Data['showOffline'] == 'true'
+                || $Data['showOffline'] == 'false')
+        {
+            return true;
+        }
+        throw new ExceptionProcessing(24);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
     public function get_user_filter_by_account($user_account)
     {
         $this->_set_user_by_account($user_account);
@@ -626,7 +641,11 @@ class User extends EntityWithDB
     private function _remove_excess_from_data($Data)
     {
         unset($Data['user_id']);
-        unset($Data['go']);
+        unset($Data['action']);
+        if (!isset($Data['showOffline']))
+        {
+            $Data['showOffline'] = true;
+        }
         return json_encode($Data);
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -657,7 +676,7 @@ class User extends EntityWithDB
     
     private function _get_photo_path($user_id)
     {
-        return "static/img/$user_id.jpeg";
+        return "static/img/$user_id.jpg";
     }
     /////////////////////////////////////////////////////////////////////////////
     
