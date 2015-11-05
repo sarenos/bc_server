@@ -13,7 +13,14 @@ class User extends EntityWithDB
         'city'
     );
     const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`";
-
+    public $SQL_FILTER_ONLINE;
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->SQL_FILTER_ONLINE = "loc.date_crt > DATE_sub(NOW(), INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS isOnline";
+    }
     /////////////////////////////////////////////////////////////////////////////
     
     public function &get_all_fields_instances()
@@ -687,6 +694,14 @@ class User extends EntityWithDB
             return $this->_get_photo_path($user_id);
         }
         return "";
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_filter_offline($user_id)
+    {
+        $this->_set_user_by_id($user_id);
+        $all_filter = $this->_get_filter_value();
+        return $all_filter->showOffline;
     }
     /////////////////////////////////////////////////////////////////////////////
 }

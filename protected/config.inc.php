@@ -60,4 +60,7 @@ define('FILTER_MINAGE', 14);
 define('FILTER_MAXAGE', 99);
 define('FILTER_RADIUS', 5);
 
+/* status online */
+define('STATUS_ONLINE_MINUTES_FRIEND', 10);
+
 return true;

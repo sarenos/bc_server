@@ -103,8 +103,8 @@ class Connections extends EntityWithDB
     private function _get_list_by_every_user($num_user_main, $num_user_find)
     {
         $this->DBHandler->db->exec_query(
-                "SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA
-                . "     , loc.date_crt > DATE_sub(NOW(), INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS online"
+                "SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA . ", "
+                . $this->_User->SQL_FILTER_ONLINE
                 . " FROM `bc_locations` AS loc,"
                 . " `bc_users_info`"
                 . " JOIN ("

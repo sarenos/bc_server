@@ -38,6 +38,7 @@ class MainFiltersModel extends MainModel
         $Data_res = array();
         $this->_User->set_page_num((int)@$_GET['page']);
         $friends = $this->_Friends->get_friends_id($user_id);
+        $is_filter_online = $this->_User->get_filter_offline($user_id);
         foreach ($this->_User->get_users_by_filters($Filter, $sql_filter)
                     as $user_data)
         {

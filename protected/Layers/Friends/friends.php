@@ -5,7 +5,7 @@ require_once LAYERS_DIR . '/User/user.php';
 
 class Friends extends EntityWithDB
 {
-    private $_user1, $_user2;
+    private $_User, $_user1, $_user2;
     private $_key_fields = array('user1', 'user2');
     private $_is_from_user1;
     /////////////////////////////////////////////////////////////////////////////
@@ -200,7 +200,7 @@ class Friends extends EntityWithDB
         $this->DBHandler->db->exec_query(
                 "SELECT fr.user$num_user1 AS user_id, " . User::SQL_USER_DATA
                 . ", loc.latitude AS lat, loc.longitude AS lng,"
-                . "fr.status, loc.date_crt > DATE_sub(NOW(), INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS online"
+                . "fr.status, " . $this->_User->SQL_FILTER_ONLINE
                 . " FROM `bc_locations` AS loc, `bc_users_info`"
                 . " JOIN (SELECT * FROM `bc_friends` WHERE user$num_user2 = '".$this->_user1."') AS fr"
                 . " ON `bc_users_info`.user_id = fr.user$num_user1 "
