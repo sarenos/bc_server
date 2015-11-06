@@ -214,6 +214,7 @@ class Friends extends EntityWithDB
                     || ($record['status'] == -1 && $num_user2 == 2)
                     || $record['status'] > 0)
             {
+                $record['isOnline'] = $record['isOnline'] ? true : false;
                 $res_rec[] = array_merge(
                                 $record,
                                 array(
@@ -293,6 +294,20 @@ class Friends extends EntityWithDB
             $friends[] = $friend['friends'];
         }
         return $friends;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    /* TODO: remove */
+    public function is_user_online($user_id)
+    {
+        $filter_res = false;
+        $this->DBHandler->db->exec_query(
+                "SELECT " . $this->_User->SQL_FILTER_ONLINE . " FROM `bc_locations` AS loc WHERE user_id='$user_id'"
+        );
+        foreach ($this->DBHandler->db->get_all_data() as $filter) {
+            $filter_res = $filter['isOnline'] ? true : false;
+        }
+        return $filter_res;
     }
     /////////////////////////////////////////////////////////////////////////////
 }

@@ -38,21 +38,31 @@ class MainFiltersModel extends MainModel
         $Data_res = array();
         $this->_User->set_page_num((int)@$_GET['page']);
         $friends = $this->_Friends->get_friends_id($user_id);
-        $is_filter_online = $this->_User->get_filter_offline($user_id);
+        $is_filter_offline = $this->_User->get_filter_offline($user_id);
         foreach ($this->_User->get_users_by_filters($Filter, $sql_filter)
                     as $user_data)
         {
             if (!in_array($user_data['user_id'], $friends)) {
-                $Data_res[] = array_merge($user_data,
-                                $this->_Friends->get_users_status($user_id, $user_data['user_id']));
+                $is_online = $this->_Friends->is_user_online($user_data['user_id']);
+                if ((!$is_filter_offline && $is_online) || $is_filter_offline)
+                {
+                    $Data_res[] = array_merge($user_data,
+                                    $this->_Friends->get_users_status($user_id, $user_data['user_id']),
+                                    array('isOnline' => $is_online));
+                }
             }
         }
         foreach ($friends as $one_friend) {
-            $Data_res[] = array_merge(
-                            array('user_id' => $one_friend),
-                            $this->_User->get_user_data_by_id($one_friend),
-                            $this->_Location->get_user_coordinates($one_friend),
-                            $this->_Friends->get_users_status($user_id, $one_friend));
+            $is_online = $this->_Friends->is_user_online($one_friend);
+            if ((!$is_filter_offline && $is_online) || $is_filter_offline)
+            {
+                $Data_res[] = array_merge(
+                                array('user_id' => $one_friend),
+                                $this->_User->get_user_data_by_id($one_friend),
+                                $this->_Location->get_user_coordinates($one_friend),
+                                $this->_Friends->get_users_status($user_id, $one_friend),
+                                array('isOnline' => $is_online));
+            }
         }
         $this->Result = array('data' => $Data_res);
     }

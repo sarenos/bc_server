@@ -701,7 +701,12 @@ class User extends EntityWithDB
     {
         $this->_set_user_by_id($user_id);
         $all_filter = $this->_get_filter_value();
-        return $all_filter->showOffline;
+        $res = false;
+        if ($all_filter->showOffline == "true")
+        {
+            $res = true;
+        }
+        return $res;
     }
     /////////////////////////////////////////////////////////////////////////////
 }

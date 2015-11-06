@@ -116,6 +116,7 @@ class Connections extends EntityWithDB
         $res = array();
         foreach ($this->DBHandler->db->get_all_data() as $user)
         {
+            $user['isOnline'] = $user['isOnline'] ? true : false;
             $res[] = $user;
         }
         return $res;
