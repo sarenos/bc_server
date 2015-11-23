@@ -2,10 +2,12 @@
 
 require_once LAYERS_DIR . '/Entity/entity_with_db.inc.php';
 require_once LAYERS_DIR.'/Paging/sql_pager.inc.php';
+require_once LAYERS_DIR . '/User/user.php';
 
 class Messages extends EntityWithDB
 {
     private $_Data;
+    private $_User;
     /////////////////////////////////////////////////////////////////////////////
     
     public function &get_all_fields_instances()
@@ -28,6 +30,13 @@ class Messages extends EntityWithDB
         $this-> create_tuple();
         $this-> DBHandler-> set_primary_key('id');
         $this->set_per_page(PER_PAGE_MESSAGES);
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_User = new User();
     }
     /////////////////////////////////////////////////////////////////////////////
 
@@ -97,7 +106,21 @@ class Messages extends EntityWithDB
             $all_messages[] = $message;
             ++$id;
         }
+        $this->_set_messages_as_read($connection_id);
         return $all_messages;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    private function _set_messages_as_read($connection_id)
+    {
+        $status_messages_to_user = $this->_get_status_messages_to_user();
+        $this->DBHandler->db->exec_query(
+                "SELECT COUNT(*) FROM `bc_messages` WHERE `connection_id` = '$connection_id' AND `status` = -$status_messages_to_user"
+        );
+        $this->_User->dec_count_messages((float)@$this->_Data['user'], $this->db->get_one());
+        $this->DBHandler->db->exec_query(
+                "UPDATE `bc_messages` SET `status` = $status_messages_to_user WHERE `connection_id` = '$connection_id' AND `status` = -$status_messages_to_user"
+        );
     }
     /////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +131,12 @@ class Messages extends EntityWithDB
             return 1;
         }
         return 2;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+
+    private function _get_status_messages_to_user()
+    {
+        return ($this->_get_user_message_status() == 1) ? 2 : 1;
     }
     /////////////////////////////////////////////////////////////////////////////
 

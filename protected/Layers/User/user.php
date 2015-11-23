@@ -19,7 +19,8 @@ class User extends EntityWithDB
     public function __construct()
     {
         parent::__construct();
-        $this->SQL_FILTER_ONLINE = "loc.date_crt > DATE_sub(NOW(), INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS isOnline";
+        $now = strftime('%Y-%m-%d %H:%M:%S');
+        $this->SQL_FILTER_ONLINE = "loc.date_crt > DATE_sub('$now', INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS isOnline";
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -480,12 +481,20 @@ class User extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
     
-    public function dec_count_messages($user_id)
+    public function dec_count_messages($user_id, $count_dec = 1)
     {
         $count_messages = $this->_get_count_new_messages($user_id);
         if ($count_messages > 0)
         {
-            $this->Fields['new_messages']->set(--$count_messages);
+            if ($count_messages-$count_dec >= 0)
+            {
+                $count_need_dec = $count_messages-$count_dec;
+            }
+            else
+            {
+                $count_need_dec = 0;
+            }
+            $this->Fields['new_messages']->set($count_need_dec);
             $this->DBHandler->update();
         }
     }
@@ -518,6 +527,7 @@ class User extends EntityWithDB
         $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
                 . " FROM bc_users_info JOIN $sql_join"
                 . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where"
+                //. " AND " . $this->_get_filter_for_not_in_friends(@$Filter['user_id'])
                 . $this->get_limit_part());
         return $this->DBHandler->db->get_all_data();
     }
@@ -529,6 +539,13 @@ class User extends EntityWithDB
         $this->load_by_field('user_account');
         return (float)@$this->Fields['radius']->get();
     }*/
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_filter_for_not_in_friends($user_id)
+    {
+        return "bc_users_info.user_id NOT IN (SELECT `user1` FROM `bc_friends` WHERE `user2` = '$user_id' AND `status` = 1)
+                AND bc_users_info.user_id NOT IN (SELECT `user2` FROM `bc_friends` WHERE `user1` = '$user_id' AND `status` = 1)";
+    }
     /////////////////////////////////////////////////////////////////////////////
     
     private function _get_filter_for_age($minAge, $maxAge)
