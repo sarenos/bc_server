@@ -102,9 +102,9 @@ function compile_actions_method_name($action_name)
 
 private function get_action_name()
 {
-     if (isset ($_POST['go']))
+     if (isset ($_POST['action']))
      {
-          return $_POST['go'];
+          return $_POST['action'];
      }
      
      if (isset($_GET['action']))
