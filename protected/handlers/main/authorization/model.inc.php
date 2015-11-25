@@ -66,29 +66,24 @@ if($result[0]['status'] == "-1")  {
 
     public function action_update()
     {
-        $account = (String)@$_POST['user_account'];
+        $user_id= (String)@$_POST['user_id'];
 
-	if(isset($_POST['photo'])){
+	if(isset($_POST['photo']))
+	{
         $photoB64 =  $_POST['photo'];
 
-        $url = "static/img/".$account.".jpeg";
+        $url = "static/img/".$user_id.".jpg";
         $ifp = fopen($url, "wb");
 
         //$data = explode($photoB64);
 
         fwrite($ifp, base64_decode($photoB64 ));
         fclose($ifp);
+
+        $this->_DBHandler->exec_query("UPDATE bc_users_info SET  photo = '".$url."'  WHERE user_id = ".$user_id);
         }
 
-        $city= (String)@$_POST['city'];
-//$account = (String)@$_POST['user_account'];
-        $sex = (String)@$_POST['sex'];
-        $siteUrl = (String)@$_POST['siteUrl'];
-        $birthdayDate = (String)@$_POST['birthdayDate'];
-
-        $this->_DBHandler->exec_query("UPDATE bc_users_info SET city = '".$city."', sex = '".$sex."', birth_date = '".$birthdayDate."',photo = '".$url."', vk_id = '".$siteUrl."'  WHERE user_account LIKE '".$account."'");
-
-        $this->Result = array("data" => "ok");
+        $this->Result = array("data" => array("status"=>"0"));
     }
 
 

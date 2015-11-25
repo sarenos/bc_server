@@ -37,10 +37,10 @@ define('CSV_FILE_NAME', '/blagotvor.csv');
 
 ////////////////////////////////////////////////////////////////////////////
 
-$Config['db_name'] = 'u863877686_bambi';
-$Config['db_host'] = 'mysql.hostinger.com.ua';
-$Config['db_user'] = 'u863877686_test';
-$Config['db_pass'] = '37pxo9OZV3Ko8ITajQ';
+$Config['db_name'] = 'bambicity_db';
+$Config['db_host'] = 'node26056-env-8112542.unicloud.pl';
+$Config['db_user'] = 'sarenos';
+$Config['db_pass'] = 'spider091';
 
 //$Config['db_name'] = 'bambi_city_db';
 //$Config['db_host'] = 'localhost';
