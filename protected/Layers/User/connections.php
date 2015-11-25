@@ -103,8 +103,7 @@ class Connections extends EntityWithDB
     private function _get_list_by_every_user($num_user_main, $num_user_find)
     {
         $this->DBHandler->db->exec_query(
-                "SELECT * FROM (SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA
-                . ", `bc_users_info`.`new_messages`, "
+                "SELECT *, COUNT(*) AS new_messages FROM (SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA . ", "
                 . $this->_User->SQL_FILTER_ONLINE
                 . ", mes.message, mes.dt_create AS dt_message
                 FROM `bc_locations` AS loc,
@@ -115,6 +114,7 @@ class Connections extends EntityWithDB
                 ) AS con_usr ON con_usr.user = `bc_users_info`.user_id
                 WHERE `bc_users_info`.user_id = loc.user_id
                     AND mes.connection_id = con_usr.id
+                    AND IF(".$this->_user1." > user, status = -1, status = -2)
                 ORDER BY mes.dt_create DESC) dt_order
                 GROUP BY id"
                 . $this->get_limit_part()
