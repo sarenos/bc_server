@@ -20,7 +20,7 @@ class User extends EntityWithDB
     {
         parent::__construct();
         $now = strftime('%Y-%m-%d %H:%M:%S');
-        $this->SQL_FILTER_ONLINE = "loc.date_crt > DATE_sub('$now', INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS isOnline";
+        $this->SQL_FILTER_ONLINE = "IF(date_crt > DATE_sub('$now', INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE), 'true', 'false') AS isOnline";
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -524,10 +524,13 @@ class User extends EntityWithDB
             $sql_where .= ' AND ';
         }
         $sql_where .= "bc_users_info.user_id NOT LIKE '" . @$Filter['user_id'] . "'";
-        $this->DBHandler->db->exec_query("SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age, bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat, t_users_in_radius.lng"
+        $this->DBHandler->db->exec_query(
+                "SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age,
+                    bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat,
+                    t_users_in_radius.lng, isOnline"
                 . " FROM bc_users_info JOIN $sql_join"
                 . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where"
-                //. " AND " . $this->_get_filter_for_not_in_friends(@$Filter['user_id'])
+                . " AND " . $this->_get_filter_for_not_in_friends(@$Filter['user_id'])
                 . $this->get_limit_part());
         return $this->DBHandler->db->get_all_data();
     }

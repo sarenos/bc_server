@@ -1,16 +1,19 @@
 <?php
 
 require_once LAYERS_DIR . '/Entity/entity_with_db.inc.php';
+require_once LAYERS_DIR . '/User/user.php';
 
 class Location extends EntityWithDB
 {
     private $_DBHandler;
+    private $_User;
     /////////////////////////////////////////////////////////////////////////////
 
     public function __construct()
     {
         parent::__construct();
         $this->_DBHandler = produce_db();
+        $this->_User = new User();
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -48,7 +51,7 @@ class Location extends EntityWithDB
     }*/
     /////////////////////////////////////////////////////////////////////////////
     
-    public function get_sql_for_filter_radius($radius_km, $user_id)
+    public function get_sql_for_filter_radius($radius_km, $user_id, $show_offline)
     {
         $coordinates = $this->_get_last_coordinates_by_user($user_id);
         $radius_grad = $this->_round_up($radius_km / 111.111, 2);
@@ -70,9 +73,13 @@ class Location extends EntityWithDB
             FROM ("
                 . $this->get_sql_for_users_last_coords()
                 //(SELECT * FROM " . $this->get_sql_for_users_last_coords() . " t_users_last_coords
-                . " WHERE `latitude` >= " . ($lat - $radius_grad) . " AND `latitude` <= " . ($lat + $radius_grad) . " AND `longitude` >= " . ($lng - $radius_grad) . " AND `longitude` <= " . ($lng + $radius_grad)
+                . " WHERE `latitude` >= " . ($lat - $radius_grad)
+                . "     AND `latitude` <= " . ($lat + $radius_grad)
+                . "     AND `longitude` >= " . ($lng - $radius_grad)
+                . "     AND `longitude` <= " . ($lng + $radius_grad)
                     . ") `t_users_in_round`) `t_users_close_with_distance`
-            WHERE distance < $radius_km
+            WHERE distance < $radius_km 
+                AND " . $this->_get_sql_for_filter_show_offline($show_offline) . "
             ORDER BY distance) `t_users_in_radius`";
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -84,7 +91,8 @@ class Location extends EntityWithDB
                     FROM `bc_locations`
                     ORDER BY date_crt DESC
                     ) t_sort_dt GROUP BY user_id)";*/
-        return "SELECT user_id, latitude AS lat, longitude AS lng FROM `bc_locations`";
+        return "SELECT user_id, latitude AS lat, longitude AS lng, "
+                . $this->_User->SQL_FILTER_ONLINE . " FROM `bc_locations`";
     }
     /////////////////////////////////////////////////////////////////////////////
 
@@ -96,6 +104,16 @@ class Location extends EntityWithDB
         }
         $mult = pow(10, $precision);
         return ceil($value * $mult) / $mult;
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    private function _get_sql_for_filter_show_offline($show_offline)
+    {
+        if ($show_offline)
+        {
+            return '1';
+        }
+        return 'isOnline = 1';
     }
     /////////////////////////////////////////////////////////////////////////////
 
