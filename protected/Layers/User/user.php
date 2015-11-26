@@ -716,6 +716,7 @@ class User extends EntityWithDB
 
             fwrite($ifp, base64_decode($photoB64 ));
             fclose($ifp);
+			$this->DBHandler->db->exec_query("UPDATE bc_users_info SET photo = '".$url."' WHERE user_id = ".(string)@$Data['user_id']);
             return true;
         }
         throw new ExceptionProcessing(12);
