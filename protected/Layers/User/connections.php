@@ -103,8 +103,9 @@ class Connections extends EntityWithDB
     private function _get_list_by_every_user($num_user_main, $num_user_find)
     {
         $this->DBHandler->db->exec_query(
-                "SELECT *, COUNT(*) AS new_messages FROM (SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA . ", "
+                "SELECT *, SUM(is_new_message) AS new_messages FROM (SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA . ", "
                 . $this->_User->SQL_FILTER_ONLINE
+                . ", IF(IF(".$this->_user1." > user, status = -1, status = -2), 1, 0) AS is_new_message"
                 . ", mes.message, mes.dt_create AS dt_message
                 FROM `bc_locations` AS loc,
                     `bc_messages` AS mes, 
@@ -114,7 +115,6 @@ class Connections extends EntityWithDB
                 ) AS con_usr ON con_usr.user = `bc_users_info`.user_id
                 WHERE `bc_users_info`.user_id = loc.user_id
                     AND mes.connection_id = con_usr.id
-                    AND IF(".$this->_user1." > user, status = -1, status = -2)
                 ORDER BY mes.dt_create DESC) dt_order
                 GROUP BY id"
                 . $this->get_limit_part()
@@ -122,6 +122,7 @@ class Connections extends EntityWithDB
         $res = array();
         foreach ($this->DBHandler->db->get_all_data() as $user)
         {
+            unset($user['is_new_message']);
             $user['isOnline'] = $user['isOnline'] ? true : false;
             $res[] = $user;
         }
