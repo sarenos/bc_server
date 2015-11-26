@@ -39,7 +39,7 @@ function get_day()
 
 function get_default_value()
 {
-     return "'" . strftime('%Y-%m-%d', 0) . "'";
+     return "'0000-00-00'";
 }
 ///////////////////////////////////////////////////////////////////////////
 
