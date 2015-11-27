@@ -20,7 +20,7 @@ class User extends EntityWithDB
     {
         parent::__construct();
         $now = strftime('%Y-%m-%d %H:%M:%S');
-        $this->SQL_FILTER_ONLINE = "IF(date_crt > DATE_sub('$now', INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE), 'true', 'false') AS isOnline";
+        $this->SQL_FILTER_ONLINE = "date_crt > DATE_sub('$now', INTERVAL ".STATUS_ONLINE_MINUTES_FRIEND." MINUTE) AS isOnline";
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -525,12 +525,19 @@ class User extends EntityWithDB
         }
         $sql_where .= "bc_users_info.user_id NOT LIKE '" . @$Filter['user_id'] . "'";
         $this->DBHandler->db->exec_query(
-                "SELECT bc_users_info.user_id, bc_users_info.nick, bc_users_info.age,
-                    bc_users_info.sex, bc_users_info.photo, t_users_in_radius.lat,
-                    t_users_in_radius.lng, isOnline"
+                "SELECT user_id, nick, age, sex, photo, lat, lng, isOnline,
+                    IF(fr_status_wthiout_null < -2, -1, 0) AS friend
+                FROM (
+                    SELECT `tmp_without_friends`.*,
+                        IFNULL(`bc_friends`.status, -100) AS fr_status_wthiout_null
+                FROM (
+                    SELECT bc_users_info.*, lat, lng, isOnline"
                 . " FROM bc_users_info JOIN $sql_join"
-                . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where"
-                . " AND " . $this->_get_filter_for_not_in_friends(@$Filter['user_id'])
+                . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where
+                ) `tmp_without_friends` "
+                . $this->_get_filter_for_not_in_friends(@$Filter['user_id']) . "
+                )  `tmp_with_friends`
+                WHERE fr_status_wthiout_null <> 1"
                 . $this->get_limit_part());
         return $this->DBHandler->db->get_all_data();
     }
@@ -546,8 +553,12 @@ class User extends EntityWithDB
     
     private function _get_filter_for_not_in_friends($user_id)
     {
-        return "bc_users_info.user_id NOT IN (SELECT `user1` FROM `bc_friends` WHERE `user2` = '$user_id' AND `status` = 1)
-                AND bc_users_info.user_id NOT IN (SELECT `user2` FROM `bc_friends` WHERE `user1` = '$user_id' AND `status` = 1)";
+        return "LEFT JOIN `bc_friends`
+                ON (`bc_friends`.user1 = '$user_id'
+                        AND user_id = `bc_friends`.user2
+                    ) OR (`bc_friends`.user2 = '$user_id'
+                        AND user_id = `bc_friends`.user1
+                    )";
     }
     /////////////////////////////////////////////////////////////////////////////
     
@@ -558,6 +569,16 @@ class User extends EntityWithDB
             return 'age >= ' . $minAge . ' AND age <= ' . $maxAge;
         }
         return '';
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    
+    public function get_sql_for_filter_show_offline($show_offline)
+    {
+        if ($show_offline)
+        {
+            return '1';
+        }
+        return 'isOnline = 1';
     }
     /////////////////////////////////////////////////////////////////////////////
     

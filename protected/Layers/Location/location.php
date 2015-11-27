@@ -79,7 +79,7 @@ class Location extends EntityWithDB
                 . "     AND `longitude` <= " . ($lng + $radius_grad)
                     . ") `t_users_in_round`) `t_users_close_with_distance`
             WHERE distance < $radius_km 
-                AND " . $this->_get_sql_for_filter_show_offline($show_offline) . "
+                AND " . $this->_User->get_sql_for_filter_show_offline($show_offline) . "
             ORDER BY distance) `t_users_in_radius`";
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -104,16 +104,6 @@ class Location extends EntityWithDB
         }
         $mult = pow(10, $precision);
         return ceil($value * $mult) / $mult;
-    }
-    /////////////////////////////////////////////////////////////////////////////
-    
-    private function _get_sql_for_filter_show_offline($show_offline)
-    {
-        if ($show_offline)
-        {
-            return '1';
-        }
-        return 'isOnline = 1';
     }
     /////////////////////////////////////////////////////////////////////////////
 

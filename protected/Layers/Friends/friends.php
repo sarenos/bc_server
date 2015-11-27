@@ -282,18 +282,30 @@ class Friends extends EntityWithDB
     }
     /////////////////////////////////////////////////////////////////////////////
 
-    /* TODO: remove */
-    public function get_friends_id($user_id)
+    public function get_friends_info($user_id, $show_offline)
     {
         $this->DBHandler->db->exec_query(
-                "(SELECT `user1` AS `friends` FROM `bc_friends` WHERE `user2` = '$user_id' AND `status` = 1)
-                 UNION (SELECT `user2` AS `friends` FROM `bc_friends` WHERE `user1` = '$user_id' AND `status` = 1)"
+            "SELECT user_id, nick, age, sex, photo, lat, lng, isOnline, 1 AS friend
+            FROM (
+                SELECT us_info.*, latitude AS lat, longitude AS lng,
+                    " . $this->_User->SQL_FILTER_ONLINE . "
+                FROM `bc_locations` AS loc,
+                    (
+                        (SELECT `user1` AS `friends`
+                        FROM `bc_friends`
+                        WHERE `user2` = '$user_id' AND `status` = 1)
+                    UNION (
+                        SELECT `user2` AS `friends`
+                        FROM `bc_friends`
+                        WHERE `user1` = '$user_id' AND `status` = 1)
+                    ) `tmp_friends`
+                JOIN `bc_users_info` AS us_info
+                    ON us_info.user_id = friends
+                WHERE us_info.user_id = loc.user_id
+            ) tmp_not_online
+            WHERE " . $this->_User->get_sql_for_filter_show_offline($show_offline)
         );
-        $friends = array();
-        foreach ($this->DBHandler->db->get_all_data() as $friend) {
-            $friends[] = $friend['friends'];
-        }
-        return $friends;
+        return $this->DBHandler->db->get_all_data();
     }
     /////////////////////////////////////////////////////////////////////////////
 
