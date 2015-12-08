@@ -228,8 +228,8 @@ class Friends extends EntityWithDB
 
     private function _is_friend($status)
     {
-        // true - friend; false - request to friend
-        return ($status > 0) ? 1 : 0;
+        // true - friend; false - request to friend, delete
+        return ($status == 1) ? 1 : 0;
     }
     /////////////////////////////////////////////////////////////////////////////
 
@@ -240,7 +240,8 @@ class Friends extends EntityWithDB
             throw new ExceptionProcessing(35);
             //return $this->_return_err('They are not friends!');
         }
-        $this->DBHandler->delete_by_fields_list($this->_key_fields);
+        //$this->DBHandler->delete_by_fields_list($this->_key_fields);
+        $this->set_new_status_friends(2 + $this->_get_positive_status());
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////

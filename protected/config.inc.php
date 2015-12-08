@@ -55,9 +55,9 @@ $Config['db_pass'] = 'AMPoyv98957';
 $Config['db_persistent'] = false;
 $Config['db_debug_mode'] = false;
 define('PER_PAGE_DEFAULT', 13);
-define('PER_PAGE_MESSAGES', 100);
-define('PER_PAGE_FRIENDS', 100);
-define('PER_PAGE_USERS', 100);
+define('PER_PAGE_MESSAGES', 100000000);
+define('PER_PAGE_FRIENDS', 100000000);
+define('PER_PAGE_USERS', 100000000);
 
 /* filter default values */
 define('FILTER_SEX', 'all');
