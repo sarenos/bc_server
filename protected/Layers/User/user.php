@@ -431,7 +431,7 @@ class User extends EntityWithDB
         $this->Fields['android_account']->set($this->_get_data_field('android_account'));
         //$this->Fields['phone']->set(trim((string)@$data['phone']));
         //$this->Fields['vk_id']->set(trim((string)@$data['vk_id']));
-        //$this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
+        $this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
         $this->Fields['city']->set($this->_get_data_field('city'));
         $this->DBHandler->update_only_fields_list($fields_list);
         return true;
