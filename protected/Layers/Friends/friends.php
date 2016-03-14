@@ -189,7 +189,7 @@ class Friends extends EntityWithDB
     public function get_list()
     {
         return array_merge(
-                    $this->_load_by_user(1, 2),
+                    $this->_load_by_user(1, 2)
                 );
     }
     /////////////////////////////////////////////////////////////////////////////
