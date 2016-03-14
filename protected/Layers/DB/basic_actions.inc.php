@@ -151,8 +151,6 @@ function get_fields_list_where($fields_list)
      {
           $result .= " AND `".$field."` = ".$this-> get_escaped($field);
      }
-    var_dump($result);
-    die();
      return $result;
 }
 ///////////////////////////////////////////////////////////////////////////
