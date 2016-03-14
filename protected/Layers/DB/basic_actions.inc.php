@@ -147,10 +147,11 @@ function get_primary_where()
 function get_fields_list_where($fields_list)
 {
      $result = $this-> get_field_where(reset($fields_list));
-     //while ($field = next($fields_list))
-     //{
-          $result .= " AND `".$this-> get_escaped($fields_list[0])."` = ".$this-> get_escaped($fields_list[1]);
-     //}
+    $result .= " AND `".$fields_list[0]."` = ".$this-> get_escaped($fields_list[1]);
+//     while ($field = next($fields_list))
+//     {
+//          $result .= " AND `".$field."` = ".$this-> get_escaped($field);
+//     }
      return $result;
 }
 ///////////////////////////////////////////////////////////////////////////
