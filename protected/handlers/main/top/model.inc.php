@@ -18,8 +18,8 @@ class MainTopModel extends MainModel
 
     public function action_invite()
     {
-        $user1 = $_POST["userFrom"];
-        $user2 = $_POST["userTo"];
+        $user1 = $_POST["user_from"];
+        $user2 = $_POST["user_to"];
         $this->_DBHandler->exec_query("INSERT INTO bc_top(user1, user2)
 										   VALUES ($user1, $user2)");
     }
