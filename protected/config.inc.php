@@ -2,10 +2,10 @@
 
 if (file_exists(dirname(__FILE__).'/config.local.inc.php'))
 {
-     if (require_once dirname(__FILE__).'/config.local.inc.php')
-     {
-          return;
-     }
+    if (require_once dirname(__FILE__).'/config.local.inc.php')
+    {
+        return;
+    }
 }
 
 define('VERSION', trim(strstr('$Revision$', ' '), ' $'));
@@ -38,9 +38,9 @@ define('CSV_FILE_NAME', '/blagotvor.csv');
 ////////////////////////////////////////////////////////////////////////////
 
 $Config['db_name'] = 'bambicity_db';
-$Config['db_host'] = 'node26063-env-8112542.unicloud.pl';
+$Config['db_host'] = 'node27464-env-8112542.unicloud.pl';
 $Config['db_user'] = 'root';
-$Config['db_pass'] = 'AMPoyv98957';
+$Config['db_pass'] = 'AEahaCFeFq';
 
 //$Config['db_name'] = 'u863877686_bambi';
 //$Config['db_host'] = 'mysql.hostinger.com.ua';

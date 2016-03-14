@@ -117,7 +117,7 @@ class Friends extends EntityWithDB
     {
         $this->Fields['user1']->set($this->_user1);
         $this->Fields['user2']->set($this->_user2);
-        $this->Fields['status']->set(-1 * $this->_get_positive_status());
+        $this->Fields['status']->set(1 * $this->_get_positive_status());
         $this->Fields['dt_create']->now();
         $this->DBHandler->insert();
         return true;

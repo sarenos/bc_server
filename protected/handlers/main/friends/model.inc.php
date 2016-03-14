@@ -19,9 +19,9 @@ class MainFriendsModel extends MainModel
     public function action_invite()
     {
         $this->_set_users_post();
-        $this->_set_is_from_user1_for_invite_delete();
+        //$this->_set_is_from_user1_for_invite_delete();
         $this->_Friends->check_is_friends();
-        $this->_User->inc_count_friends((float)@$_POST['user_to']);
+        //$this->_User->inc_count_friends((float)@$_POST['user_to']);
         $this->Result = $this->_Friends->add_invite();
     }
 
