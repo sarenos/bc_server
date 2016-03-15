@@ -54,8 +54,11 @@ class MainTopModel extends MainModel
         foreach ($this->_DBHandler->get_all_data() as $record)
         {
                 $record['isOnline'] = $record['isOnline'] ? true : false;
-                $res_rec[] = $record;
-        }
+            $res_rec[] = array_merge(
+                $record,
+                array(
+                    'friend'    => 0
+                ));        }
         return $res_rec;
     }
 
