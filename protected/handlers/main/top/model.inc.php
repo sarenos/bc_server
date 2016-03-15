@@ -27,8 +27,8 @@ class MainTopModel extends MainModel
 
     public function action_get_top_list()
     {
-        $user = (string)@$_GET["user"];
-        $this->_DBHandler->exec_query("SELECT * FROM bc_top WHERE user1 = $user");
+        $user1 = (string)@$_GET["user"];
+        $this->_DBHandler->exec_query("SELECT * FROM bc_top WHERE user1 = $user1");
         $this->Result = array("data" => $this->_DBHandler->get_all_data());
     }
 
