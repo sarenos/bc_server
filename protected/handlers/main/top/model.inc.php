@@ -27,7 +27,6 @@ class MainTopModel extends MainModel
 
     public function action_get_top_list()
     {
-        $user1 = (string)@$_GET["user"];
         //$this->_DBHandler->exec_query("SELECT user2 FROM bc_top WHERE user1 = $user1");
         $this->Result = array("data" => $this->get_list());
     }
@@ -35,14 +34,21 @@ class MainTopModel extends MainModel
     public function get_list()
     {
         return array_merge(
-            $this->_load_by_user(1, 2)
+            $this->_load_by_user()
         );
     }
 
-    private function _load_by_user($num_user1, $num_user2)
+    private function _load_by_user()
     {
         $user1 = (string)@$_GET["user"];
-
+        var_dump("SELECT fr.user1 AS user_id, " . User::SQL_USER_DATA
+            . ", loc.latitude AS lat, loc.longitude AS lng,"
+            . "fr.status, " . $this->_User->SQL_FILTER_ONLINE
+            . " FROM `bc_locations` AS loc, `bc_users_info`"
+            . " JOIN (SELECT * FROM `bc_top` WHERE user1 = '".$user1."') AS fr"
+            . " ON `bc_users_info`.user_id = fr.user1 "
+            . "WHERE `bc_users_info`.user_id = loc.user_id");
+        die();
         $this->_DBHandler->exec_query(
             "SELECT fr.user1 AS user_id, " . User::SQL_USER_DATA
             . ", loc.latitude AS lat, loc.longitude AS lng,"
