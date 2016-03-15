@@ -54,6 +54,7 @@ class MainTopModel extends MainModel
         foreach ($this->_DBHandler->get_all_data() as $record)
         {
                 $record['isOnline'] = $record['isOnline'] ? true : false;
+                $res_rec[] = $record;
         }
         return $res_rec;
     }
