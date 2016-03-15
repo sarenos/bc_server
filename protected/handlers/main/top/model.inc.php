@@ -41,14 +41,6 @@ class MainTopModel extends MainModel
     private function _load_by_user()
     {
         $user1 = (string)@$_GET["user"];
-        var_dump("SELECT fr.user1 AS user_id, " . User::SQL_USER_DATA
-            . ", loc.latitude AS lat, loc.longitude AS lng,"
-            . "fr.status, " . $this->_User->SQL_FILTER_ONLINE
-            . " FROM `bc_locations` AS loc, `bc_users_info`"
-            . " JOIN (SELECT * FROM `bc_top` WHERE user1 = '".$user1."') AS fr"
-            . " ON `bc_users_info`.user_id = fr.user1 "
-            . "WHERE `bc_users_info`.user_id = loc.user_id");
-        die();
         $this->_DBHandler->exec_query(
             "SELECT fr.user1 AS user_id, " . User::SQL_USER_DATA
             . ", loc.latitude AS lat, loc.longitude AS lng,"
@@ -61,17 +53,7 @@ class MainTopModel extends MainModel
         $res_rec = array();
         foreach ($this->_DBHandler->get_all_data() as $record)
         {
-            if (($record['status'] == -2 && $num_user2 == 1)
-                || ($record['status'] == -1 && $num_user2 == 2)
-                || $record['status'] > 0)
-            {
                 $record['isOnline'] = $record['isOnline'] ? true : false;
-                $res_rec[] = array_merge(
-                    $record,
-                    array(
-                        'friend'    => $this->_is_friend($record['status'])
-                    ));
-            }
         }
         return $res_rec;
     }
