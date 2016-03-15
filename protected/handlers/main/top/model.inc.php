@@ -18,8 +18,8 @@ class MainTopModel extends MainModel
 
     public function action_invite()
     {
-        $user1 = $_POST["user_from"];
-        $user2 = $_POST["user_to"];
+        $user1 = (string)@$_POST["user_from"];
+        $user2 = (string)@$_POST["user_to"];
         $this->_DBHandler->exec_query("INSERT INTO bc_top(user1, user2)
 										   VALUES ($user1, $user2)");
         $this->Result = array("data" => "ok");
@@ -27,15 +27,15 @@ class MainTopModel extends MainModel
 
     public function action_get_top_list()
     {
-        $user = $_POST["user"];
+        $user = (string)@$_GET["user"];
         $this->_DBHandler->exec_query("SELECT * FROM bc_top WHERE user1 = $user");
         $this->Result = array("data" => $this->_DBHandler->get_all_data());
     }
 
     public function action_delete()
     {
-        $user1 = $_POST["user_from"];
-        $user2 = $_POST["user_to"];
+        $user1 = (string)@$_POST["user_from"];
+        $user2 = (string)@$_POST["user_to"];
         $this->_DBHandler->exec_query("DELETE FROM bc_top WHERE user1 = $user1 and user2 = $user2");
         $this->Result = array("data" => "ok");
     }
