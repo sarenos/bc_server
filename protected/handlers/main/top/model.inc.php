@@ -41,7 +41,7 @@ class MainTopModel extends MainModel
 
     private function _load_by_user($num_user1, $num_user2)
     {
-        $this->DBHandler->db->exec_query(
+        $this->_DBHandler->exec_query(
             "SELECT fr.user$num_user1 AS user_id, " . User::SQL_USER_DATA
             . ", loc.latitude AS lat, loc.longitude AS lng,"
             . "fr.status, " . $this->_User->SQL_FILTER_ONLINE
@@ -51,7 +51,7 @@ class MainTopModel extends MainModel
             . "WHERE `bc_users_info`.user_id = loc.user_id"
         );
         $res_rec = array();
-        foreach ($this->DBHandler->db->get_all_data() as $record)
+        foreach ($this->_DBHandler->get_all_data() as $record)
         {
             if (($record['status'] == -2 && $num_user2 == 1)
                 || ($record['status'] == -1 && $num_user2 == 2)
