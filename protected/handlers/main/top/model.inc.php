@@ -44,12 +44,12 @@ class MainTopModel extends MainModel
         $user1 = (string)@$_GET["user"];
 
         $this->_DBHandler->exec_query(
-            "SELECT fr.user$num_user1 AS user_id, " . User::SQL_USER_DATA
+            "SELECT fr.user1 AS user_id, " . User::SQL_USER_DATA
             . ", loc.latitude AS lat, loc.longitude AS lng,"
             . "fr.status, " . $this->_User->SQL_FILTER_ONLINE
             . " FROM `bc_locations` AS loc, `bc_users_info`"
-            . " JOIN (SELECT * FROM `bc_top` WHERE user$num_user2 = '".$user1."') AS fr"
-            . " ON `bc_users_info`.user_id = fr.user$num_user1 "
+            . " JOIN (SELECT * FROM `bc_top` WHERE user1 = '".$user1."') AS fr"
+            . " ON `bc_users_info`.user_id = fr.user1 "
             . "WHERE `bc_users_info`.user_id = loc.user_id"
         );
         $res_rec = array();
