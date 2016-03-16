@@ -290,15 +290,10 @@ class Friends extends EntityWithDB
                 SELECT us_info.*, latitude AS lat, longitude AS lng,
                     " . $this->_User->SQL_FILTER_ONLINE . "
                 FROM `bc_locations` AS loc,
-                    (
                         (SELECT `user1` AS `friends`
                         FROM `bc_top`
                         WHERE `user1` = '$user_id')
-                    UNION (
-                        SELECT `user2` AS `friends`
-                        FROM `bc_top`
-                        WHERE `user1` = '$user_id')
-                    ) `tmp_friends`
+                 `tmp_friends`
                 JOIN `bc_users_info` AS us_info
                     ON us_info.user_id = friends
                 WHERE us_info.user_id = loc.user_id
