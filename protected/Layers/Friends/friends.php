@@ -285,17 +285,22 @@ class Friends extends EntityWithDB
     public function get_friends_info($user_id, $show_offline)
     {
         $this->DBHandler->db->exec_query(
-            "SELECT user_id, nick, age, sex, photo, lat, lng, isOnline, 1 AS top
+            "SELECT user_id, nick, age, sex, photo, lat, lng, isOnline, 1 AS friend
             FROM (
                 SELECT us_info.*, latitude AS lat, longitude AS lng,
                     " . $this->_User->SQL_FILTER_ONLINE . "
-                FROM `bc_locations` AS loc, (
-                        SELECT `user2` AS `top`
+                FROM `bc_locations` AS loc,
+                    (
+                        (SELECT `user1` AS `friends`
+                        FROM `bc_top`
+                        WHERE `user1` = '$user_id')
+                    UNION (
+                        SELECT `user2` AS `friends`
                         FROM `bc_top`
                         WHERE `user1` = '$user_id')
                     ) `tmp_friends`
                 JOIN `bc_users_info` AS us_info
-                    ON us_info.user_id = top
+                    ON us_info.user_id = friends
                 WHERE us_info.user_id = loc.user_id
             ) tmp_not_online
             WHERE " . $this->_User->get_sql_for_filter_show_offline($show_offline)
