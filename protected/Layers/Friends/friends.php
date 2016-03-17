@@ -291,7 +291,7 @@ class Friends extends EntityWithDB
                     " . $this->_User->SQL_FILTER_ONLINE . "
                 FROM `bc_locations` AS loc,
                         (SELECT `user2` AS `friends`
-                        FROM `bc_top`
+                        FROM `bc_friends`
                         WHERE `user1` = '$user_id')
                  `tmp_friends`
                 JOIN `bc_users_info` AS us_info
