@@ -6,11 +6,15 @@ class User extends EntityWithDB
 {
     private $_user_account = '';
     private $_Data = null;
-    private $_fields_list_for_update = array(
+    private $_fields_list_for_create = array(
         'nick',
         'age',
         'android_account',
         'city'
+    );
+	
+	private $_fields_list_for_update = array(
+        'age',
     );
     const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`";
     public $SQL_FILTER_ONLINE;
@@ -283,13 +287,12 @@ class User extends EntityWithDB
             $this->_validate_account();
             $this->_validate_sex($this->_get_data_field('sex'));
             $this->_validate_nick_for_create();
+			$this->_validate_nick_general();
         }
         else
         {
             $this->check_exist_by_user_id($this->_get_data_field('user_id'));
-            $this->_validate_nick_for_update();
         }
-        $this->_validate_nick_general();
         $this->_validate_age($this->_get_data_field('age'));
         //$this->_validate_android_account($this->_get_data_field('android_account'));
         //$this->_validate_city($this->_get_data_field('city'));
