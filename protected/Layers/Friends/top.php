@@ -181,13 +181,11 @@ class Top extends EntityWithDB
 
     public function delete()
     {
-        if (!$this->_is_friends() || $this->_get_status() != 1)
+        if (!$this->_is_in_top())
         {
-            throw new ExceptionProcessing(35);
-            //return $this->_return_err('They are not friends!');
+            throw new ExceptionProcessing(51);
         }
-        //$this->DBHandler->delete_by_fields_list($this->_key_fields);
-        $this->set_new_status_friends(2 + $this->_get_positive_status());
+        $this->DBHandler->delete_by_fields_list($this->_key_fields);
         return true;
     }
     /////////////////////////////////////////////////////////////////////////////
