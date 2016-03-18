@@ -15,6 +15,7 @@ class User extends EntityWithDB
 	
 	private $_fields_list_for_update = array(
         'age',
+		'city'
     );
     const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`";
     public $SQL_FILTER_ONLINE;
@@ -422,7 +423,7 @@ class User extends EntityWithDB
         $this->_update_user(
                     array_merge(
                             array('user_account', 'sex', 'dt_create'),
-                            $this->_fields_list_for_update
+                            $this->_fields_list_for_create
                     ));
     }
     /////////////////////////////////////////////////////////////////////////////
