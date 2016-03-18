@@ -17,7 +17,7 @@ class User extends EntityWithDB
         'age',
 		'city'
     );
-    const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`";
+    const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`, `bc_users_info`.`city`";
     public $SQL_FILTER_ONLINE;
     /////////////////////////////////////////////////////////////////////////////
     
