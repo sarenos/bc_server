@@ -1,73 +1,67 @@
 <?php
 
+require_once LAYERS_DIR . '/Friends/top.php';
 require_once LAYERS_DIR . '/User/user.php';
-require_once LAYERS_DIR . '/Location/location.php';
 
 class MainTopModel extends MainModel
 {
-    private $_User, $_Location;
-    private $_DBHandler;
+    private $_Top, $_User;
 
     public function __construct()
     {
         parent::__construct();
+        $this->_Top = new Top();
         $this->_User = new User();
-        $this->_Location = new Location();
-        $this->_DBHandler = produce_db();
     }
 
-    public function action_invite()
+    public function action_add()
     {
-        $user1 = (string)@$_POST["user_from"];
-        $user2 = (string)@$_POST["user_to"];
-        $this->_DBHandler->exec_query("INSERT INTO bc_top(user1, user2)
-										   VALUES ($user1, $user2)");
-        $this->Result = array("data" => "ok");
+        $this->_set_users_post();
+        $this->_Top->check_is_in_top();
+        $this->Result = $this->_Top->add_in_top();
     }
 
-    public function action_get_top_list()
+    public function action_get_list()
     {
-        //$this->_DBHandler->exec_query("SELECT user2 FROM bc_top WHERE user1 = $user1");
-        $this->Result = array("data" => $this->get_list());
+        $this->_set_user_get();
+        $this->_Top->set_page_num((int)@$_GET['page']);
+        $this->Result = array('data' => $this->_Top->get_list());
     }
-
-    public function get_list()
-    {
-        return array_merge(
-            $this->_load_by_user()
-        );
-    }
-
-    private function _load_by_user()
-    {
-        $user1 = (string)@$_GET["user"];
-        $this->_DBHandler->exec_query(
-            "SELECT fr.user2 AS user_id, " . User::SQL_USER_DATA
-            . ", loc.latitude AS lat, loc.longitude AS lng,"
-            . "fr.status, " . $this->_User->SQL_FILTER_ONLINE
-            . " FROM `bc_locations` AS loc, `bc_users_info`"
-            . " JOIN (SELECT * FROM `bc_top` WHERE user1 = '".$user1."') AS fr"
-            . " ON `bc_users_info`.user_id = fr.user2 "
-            . "WHERE `bc_users_info`.user_id = loc.user_id"
-        );
-        $res_rec = array();
-        foreach ($this->_DBHandler->get_all_data() as $record)
-        {
-                $record['isOnline'] = $record['isOnline'] ? true : false;
-            $res_rec[] = array_merge(
-                $record,
-                array(
-                    'friend'    => 0
-                ));        }
-        return $res_rec;
-    }
-
+    
     public function action_delete()
     {
-        $user1 = (string)@$_POST["user_from"];
-        $user2 = (string)@$_POST["user_to"];
-        $this->_DBHandler->exec_query("DELETE FROM bc_top WHERE user1 = $user1 and user2 = $user2");
-        $this->Result = array("data" => "ok");
+        $this->_set_users_post();
+        $this->Result = $this->_Top->delete();
+    }
+    
+    /*public function action_status_friend()
+    {
+        $this->Result = $this->_Friends->get_users_status(
+                                            (float)@$_GET['user_from'],
+                                            (float)@$_GET['user_to']
+                                        );
+    }
+    
+    public function action_was_invitation()
+    {
+        $this->_Friends->set_users(
+                            (float)@$_GET['user_from'],
+                            (float)@$_GET['user_to']);
+        //$this->_Top->set_is_from_user1((float)@$_GET['user_from'] > (float)@$_GET['user_to']);
+        $this->Result = $this->_Friends->was_invitation();
+    }*/
+
+    private function _set_users_post()
+    {
+        $this->_Top->set_users(
+                            (float)@$_POST['user1'],
+                            (float)@$_POST['user2']);
+        $this->_Top->check_users_identical();
+    }
+
+    private function _set_user_get()
+    {
+        $this->_Top->set_user1((string)@$_GET['user']);
     }
 
     public function action_default()
