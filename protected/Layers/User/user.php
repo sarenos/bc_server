@@ -47,7 +47,9 @@ class User extends EntityWithDB
         $result['new_messages']     = new FieldInt();
         $result['radius']           = new FieldFloat();
         $result['filter']           = new FieldString();
-        
+        $result['status']           = new FieldString();
+
+        $result['status']->set_max_length(500);
         $result['user_account']->set_max_length(50);
         $result['nick']->set_max_length(20);
         $result['sex']->set_max_length(1);
