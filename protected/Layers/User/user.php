@@ -15,7 +15,8 @@ class User extends EntityWithDB
 	
 	private $_fields_list_for_update = array(
         'age',
-		'status'
+		'status',
+        'sex'
     );
     const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`, `bc_users_info`.`city`";
     public $SQL_FILTER_ONLINE;
@@ -438,6 +439,7 @@ class User extends EntityWithDB
         //$this->Fields['phone']->set(trim((string)@$data['phone']));
         //$this->Fields['vk_id']->set(trim((string)@$data['vk_id']));
        // $this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
+        $this->Fields['sex']->set($this->_get_data_field('sex'));
         $this->Fields['status']->set($this->_get_data_field('status'));
         $this->DBHandler->update_only_fields_list($fields_list);
         return true;
