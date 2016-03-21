@@ -25,15 +25,13 @@ class MainFindModel extends MainModel
 
     private function _load_by_find()
     {
-        $user1 = (string)@$_GET["find_nick"];
+        $user1 = (string)@$_GET["find_nick"];		
         $this->_DBHandler->exec_query(
             "SELECT ". User::SQL_USER_DATA
             . ", loc.latitude AS lat, loc.longitude AS lng,"
             . "find.status, " . $this->_User->SQL_FILTER_ONLINE
             . " FROM `bc_locations` AS loc, `bc_users_info`"
-            . " JOIN (SELECT * FROM `bc_users_info` WHERE nick LIKE '".$user1."') AS find"
-            . " ON `bc_users_info`.user_id = find.user2 "
-            . "WHERE `bc_users_info`.user_id = loc.user_id"
+            . "WHERE `bc_users_info`.user_id = loc.user_id and bc_users_info.nick like '".$user1."%'" 
         );
         $res_rec = array();
         foreach ($this->_DBHandler->get_all_data() as $record)
