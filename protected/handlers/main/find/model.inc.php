@@ -29,7 +29,7 @@ class MainFindModel extends MainModel
         $this->_DBHandler->exec_query(
             "SELECT ". User::SQL_USER_DATA
             . ", loc.latitude AS lat, loc.longitude AS lng,"
-            . "find.status, " . $this->_User->SQL_FILTER_ONLINE
+            . $this->_User->SQL_FILTER_ONLINE
             . " FROM `bc_locations` AS loc, `bc_users_info`"
             . "WHERE `bc_users_info`.user_id = loc.user_id and bc_users_info.nick like '".$user1."%'" 
         );
