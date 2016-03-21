@@ -105,7 +105,7 @@ class Connections extends EntityWithDB
         $this->DBHandler->db->exec_query(
                 "SELECT *, SUM(is_new_message) AS new_messages FROM (SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA . ", "
                 . $this->_User->SQL_FILTER_ONLINE
-                . ", IF(IF(".$this->_user1." > user, status = -1, status = -2), 1, 0) AS is_new_message"
+                . ", IF(IF(".$this->_user1." > user, mes.status = -1, mes.status = -2), 1, 0) AS is_new_message"
                 . ", mes.message, mes.dt_create AS dt_message
                 FROM `bc_locations` AS loc,
                     `bc_messages` AS mes, 
