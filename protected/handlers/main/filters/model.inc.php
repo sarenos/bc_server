@@ -1,19 +1,19 @@
 <?php
 
-require_once LAYERS_DIR . '/Friends/friends.php';
 require_once LAYERS_DIR . '/User/user.php';
 require_once LAYERS_DIR . '/Location/location.php';
+require_once LAYERS_DIR . '/Friends/top.php';
 
 class MainFiltersModel extends MainModel
 {
-    private $_User, $_Location, $_Friends;
+    private $_User, $_Location, $_Top;
 
     public function __construct()
     {
         parent::__construct();
         $this->_User = new User();
         $this->_Location = new Location();
-        $this->_Friends = new Friends();
+        $this->_Top = new Top();
     }
 
     public function action_get_filter()
@@ -39,7 +39,7 @@ class MainFiltersModel extends MainModel
         $this->_User->set_page_num((int)@$_GET['page']);
         $Data_res = array_merge(
                         $this->_User->get_users_by_filters($Filter, $sql_filter),
-                        $this->_Friends->get_friends_info($user_id, $show_offline));
+                        $this->_Top->get_top_info($user_id, $show_offline));
         
         foreach ($Data_res as &$user_data)
         {
