@@ -30,7 +30,7 @@ class MainFindModel extends MainModel
             . ", loc.latitude AS lat, loc.longitude AS lng,"
             . $this->_User->SQL_FILTER_ONLINE
             . " FROM `bc_locations` AS loc, `bc_users_info`"
-            . "WHERE `bc_users_info`.user_id = loc.user_id and bc_users_info.nick like '".$user1."%'" 
+            . "WHERE `bc_users_info`.user_id = loc.user_id and bc_users_info.nick like '".$user1."%' LIMIT 10" 
         );
         $res_rec = array();
         foreach ($this->_DBHandler->get_all_data() as $record)
