@@ -16,7 +16,7 @@ class MainFindModel extends MainModel
         $this->_DBHandler = produce_db();
     }
 
-    public function find()
+    public function action_find()
     {
         return array_merge(
             $this->_load_by_find()
