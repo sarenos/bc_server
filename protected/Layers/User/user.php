@@ -784,4 +784,32 @@ class User extends EntityWithDB
         return $res;
     }
     /////////////////////////////////////////////////////////////////////////////
+    
+    public function find_by_nick($nick, $user_id)
+    {
+        $this->DBHandler->db->exec_query(
+            "SELECT `tmp_found_users`.*, IF(`bc_top`.user2 IS NULL, 0, 1) AS top
+            FROM
+                (SELECT `bc_users_info`.user_id, " . User::SQL_USER_DATA
+                    . ", loc.latitude AS lat, loc.longitude AS lng, "
+                    . $this->SQL_FILTER_ONLINE . "
+                FROM `bc_locations` AS loc, `bc_users_info`
+                WHERE `bc_users_info`.user_id = loc.user_id
+                    AND bc_users_info.nick LIKE '$nick%'
+                    AND bc_users_info.user_id NOT LIKE '$user_id'
+                ) `tmp_found_users`
+                LEFT JOIN `bc_top`
+                ON `bc_top`.user1 = '$user_id'
+                    AND `bc_top`.user2 = `tmp_found_users`.user_id"
+            . $this->get_limit_part() 
+        );
+        $res_rec = array();
+        foreach ($this->DBHandler->db->get_all_data() as $record)
+        {
+            $record['isOnline'] = $record['isOnline'] ? true : false;
+            $res_rec[] = $record;    
+        }
+        return $res_rec;
+    }
+    /////////////////////////////////////////////////////////////////////////////
 }
