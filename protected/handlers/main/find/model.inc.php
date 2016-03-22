@@ -15,6 +15,7 @@ class MainFindModel extends MainModel
     public function action_find()
     {
         $this->_User->set_page_num((int)@$_GET['page']);
+        $this->_User->check_user_id_isset((string)@$_GET["user_id"], 0);
         $this->Result = array('data' => $this->_User->find_by_nick(
                                                 (string)@$_GET["find_nick"],
                                                 (string)@$_GET["user_id"])
