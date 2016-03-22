@@ -103,7 +103,9 @@ class Connections extends EntityWithDB
     private function _get_list_by_every_user($num_user_main, $num_user_find)
     {
         $this->DBHandler->db->exec_query(
-                "SELECT *, SUM(is_new_message) AS new_messages FROM (SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA . ", "
+            "SELECT `tmp_message_users`.*, IF(`bc_top`.user2 IS NULL, 0, 1) AS top
+            FROM (
+                SELECT *, SUM(is_new_message) AS new_messages FROM (SELECT `bc_users_info`.user_id AS id, " . User::SQL_USER_DATA . ", "
                 . $this->_User->SQL_FILTER_ONLINE
                 . ", IF(IF(".$this->_user1." > user, mes.status = -1, mes.status = -2), 1, 0) AS is_new_message"
                 . ", mes.message, mes.dt_create AS dt_message
@@ -116,8 +118,12 @@ class Connections extends EntityWithDB
                 WHERE `bc_users_info`.user_id = loc.user_id
                     AND mes.connection_id = con_usr.id
                 ORDER BY mes.dt_create DESC) dt_order
-                GROUP BY id"
-                . $this->get_limit_part()
+                GROUP BY id
+            ) `tmp_message_users`
+            LEFT JOIN `bc_top`
+            ON `bc_top`.user1 = '".$this->_user1."'
+                AND `bc_top`.user2 = id"
+            . $this->get_limit_part()
         );
         $res = array();
         foreach ($this->DBHandler->db->get_all_data() as $user)
