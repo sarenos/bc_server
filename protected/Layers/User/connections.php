@@ -105,7 +105,8 @@ class Connections extends EntityWithDB
         $this->DBHandler->db->exec_query(
             "SELECT `tmp_message_users`.*, IF(`bc_top`.user2 IS NULL, 0, 1) AS top
             FROM (
-                SELECT *, SUM(is_new_message) AS new_messages FROM (SELECT `bc_users_info`.user_id AS user_id, " . User::SQL_USER_DATA . ", "
+                SELECT *, SUM(is_new_message) AS new_messages FROM (SELECT `bc_users_info`.user_id AS user_id, " . User::SQL_USER_DATA
+                . ", loc.latitude AS lat, loc.longitude AS lng, "
                 . $this->_User->SQL_FILTER_ONLINE
                 . ", IF(IF(".$this->_user1." > user, mes.status = -1, mes.status = -2), 1, 0) AS is_new_message"
                 . ", mes.message, mes.dt_create AS dt_message
