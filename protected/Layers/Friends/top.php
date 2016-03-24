@@ -155,11 +155,13 @@ class Top extends EntityWithDB
         $this->DBHandler->db->exec_query(
                 "SELECT top.user2 AS user_id, " . User::SQL_USER_DATA
                 . ", loc.latitude AS lat, loc.longitude AS lng,"
-                . $this->_User->SQL_FILTER_ONLINE
-                . " FROM `bc_locations` AS loc, `bc_users_info`"
-                . " JOIN (SELECT * FROM `bc_top` WHERE user1 = '".$this->_user1."') AS top"
-                . " ON `bc_users_info`.user_id = top.user2 "
-                . "WHERE `bc_users_info`.user_id = loc.user_id"
+                . $this->_User->SQL_FILTER_ONLINE . ", 1 AS top
+                FROM `bc_locations` AS loc, `bc_users_info`
+                JOIN (
+                    SELECT * FROM `bc_top` WHERE user1 = '".$this->_user1."'
+                ) AS top
+                ON `bc_users_info`.user_id = top.user2
+                WHERE `bc_users_info`.user_id = loc.user_id"
                 . $this->get_limit_part()
         );
         $res_rec = array();
