@@ -552,7 +552,7 @@ class User extends EntityWithDB
         */
         
         $this->DBHandler->db->exec_query(
-                "SELECT user_id, nick, age, sex, photo, lat, lng, isOnline, 0 AS top
+                "SELECT user_id, nick, age, sex, photo, lat, lng, status, isOnline, 0 AS top
                 FROM (
                     SELECT `tmp_without_top`.*, `bc_top`.user2 AS user2_top
                 FROM (
