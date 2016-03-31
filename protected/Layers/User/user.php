@@ -13,7 +13,7 @@ class User extends EntityWithDB
         'city'
     );
 
-	private $_fields_list_for_update = array(
+    private $_fields_list_for_update = array(
         'age',
         'status',
         'sex'
@@ -45,11 +45,12 @@ class User extends EntityWithDB
         $result['city']             = new FieldString();
         $result['photo']            = new FieldString();
         $result['new_friends']      = new FieldInt();
-		$result['top_limit']      = new FieldInt();
         $result['new_messages']     = new FieldInt();
         $result['radius']           = new FieldFloat();
         $result['filter']           = new FieldString();
+        $result['status']           = new FieldString();
 
+        $result['status']->set_max_length(500);
         $result['user_account']->set_max_length(50);
         $result['nick']->set_max_length(20);
         $result['sex']->set_max_length(1);
@@ -257,7 +258,6 @@ class User extends EntityWithDB
         $this->Fields['user_account']->set($this->_user_account);
         $this->Fields['filter']->set($this->_get_default_filter());
         $this->Fields['dt_create']->now();
-		$this->Fields['top_limit']->set(20);
         $this->DBHandler->insert();
     }
     /////////////////////////////////////////////////////////////////////////////
