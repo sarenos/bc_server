@@ -44,6 +44,7 @@ class User extends EntityWithDB
         $result['birth_date']       = new FieldDate();
         $result['city']             = new FieldString();
         $result['photo']            = new FieldString();
+        $result['top_limit']      = new FieldInt();
         $result['new_friends']      = new FieldInt();
         $result['new_messages']     = new FieldInt();
         $result['radius']           = new FieldFloat();
@@ -258,6 +259,7 @@ class User extends EntityWithDB
         $this->Fields['user_account']->set($this->_user_account);
         $this->Fields['filter']->set($this->_get_default_filter());
         $this->Fields['dt_create']->now();
+        $this->Fields['top_limit']->set(20);
         $this->DBHandler->insert();
     }
     /////////////////////////////////////////////////////////////////////////////
