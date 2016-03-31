@@ -15,10 +15,9 @@ class User extends EntityWithDB
 	
 	private $_fields_list_for_update = array(
         'age',
-		'status',
-        'sex'
+		'city'
     );
-    const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`, `bc_users_info`.`city`, `bc_users_info`.`status`";
+    const SQL_USER_DATA = "`bc_users_info`.`nick`, `bc_users_info`.`age`, `bc_users_info`.`sex`, `bc_users_info`.`photo`, `bc_users_info`.`city`";
     public $SQL_FILTER_ONLINE;
     /////////////////////////////////////////////////////////////////////////////
     
@@ -45,12 +44,11 @@ class User extends EntityWithDB
         $result['city']             = new FieldString();
         $result['photo']            = new FieldString();
         $result['new_friends']      = new FieldInt();
+		$result['top_limit']      = new FieldInt();
         $result['new_messages']     = new FieldInt();
         $result['radius']           = new FieldFloat();
         $result['filter']           = new FieldString();
-        $result['status']           = new FieldString();
-
-        $result['status']->set_max_length(500);
+        
         $result['user_account']->set_max_length(50);
         $result['nick']->set_max_length(20);
         $result['sex']->set_max_length(1);
@@ -258,6 +256,7 @@ class User extends EntityWithDB
         $this->Fields['user_account']->set($this->_user_account);
         $this->Fields['filter']->set($this->_get_default_filter());
         $this->Fields['dt_create']->now();
+		$this->Fields['top_limit']->set(20);
         $this->DBHandler->insert();
     }
     /////////////////////////////////////////////////////////////////////////////
@@ -438,9 +437,8 @@ class User extends EntityWithDB
         $this->Fields['android_account']->set($this->_get_data_field('android_account'));
         //$this->Fields['phone']->set(trim((string)@$data['phone']));
         //$this->Fields['vk_id']->set(trim((string)@$data['vk_id']));
-       // $this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
-        $this->Fields['sex']->set($this->_get_data_field('sex'));
-        $this->Fields['status']->set($this->_get_data_field('status'));
+        $this->Fields['birth_date']->set(trim((string)@$data['birth_date']));
+        $this->Fields['city']->set($this->_get_data_field('city'));
         $this->DBHandler->update_only_fields_list($fields_list);
         return true;
     }
@@ -532,14 +530,12 @@ class User extends EntityWithDB
             $sql_where .= ' AND ';
         }
         $sql_where .= "bc_users_info.user_id NOT LIKE '" . @$Filter['user_id'] . "'";
-        
-        /* For friends:
         $this->DBHandler->db->exec_query(
                 "SELECT user_id, nick, age, sex, photo, lat, lng, isOnline,
-                    IF(fr_status_without_null < -2, -1, 0) AS friend
+                    IF(fr_status_wthiout_null < -2, -1, 0) AS friend
                 FROM (
                     SELECT `tmp_without_friends`.*,
-                        IFNULL(`bc_friends`.status, -100) AS fr_status_without_null
+                        IFNULL(`bc_friends`.status, -100) AS fr_status_wthiout_null
                 FROM (
                     SELECT bc_users_info.*, lat, lng, isOnline"
                 . " FROM bc_users_info JOIN $sql_join"
@@ -547,22 +543,7 @@ class User extends EntityWithDB
                 ) `tmp_without_friends` "
                 . $this->_get_filter_for_not_in_friends(@$Filter['user_id']) . "
                 )  `tmp_with_friends`
-                WHERE fr_status_without_null <> 1"
-                . $this->get_limit_part());
-        */
-        
-        $this->DBHandler->db->exec_query(
-                "SELECT user_id, nick, age, sex, photo, lat, lng, status, isOnline, 0 AS top
-                FROM (
-                    SELECT `tmp_without_top`.*, `bc_top`.user2 AS user2_top
-                FROM (
-                    SELECT bc_users_info.*, lat, lng, isOnline"
-                . " FROM bc_users_info JOIN $sql_join"
-                . " ON bc_users_info.user_id = t_users_in_radius.user_id WHERE $sql_where
-                ) `tmp_without_top` "
-                . $this->_get_filter_for_not_in_top(@$Filter['user_id']) . "
-                )  `tmp_with_top`
-                WHERE user2_top is NULL"
+                WHERE fr_status_wthiout_null <> 1"
                 . $this->get_limit_part());
         return $this->DBHandler->db->get_all_data();
     }
@@ -576,15 +557,7 @@ class User extends EntityWithDB
     }*/
     /////////////////////////////////////////////////////////////////////////////
     
-    private function _get_filter_for_not_in_top($user_id)
-    {
-        return "LEFT JOIN `bc_top`
-                ON `bc_top`.user1 = '$user_id'
-                    AND user_id = `bc_top`.user2";
-    }
-    /////////////////////////////////////////////////////////////////////////////
-    
-    /*private function _get_filter_for_not_in_friends($user_id)
+    private function _get_filter_for_not_in_friends($user_id)
     {
         return "LEFT JOIN `bc_friends`
                 ON (`bc_friends`.user1 = '$user_id'
@@ -592,7 +565,7 @@ class User extends EntityWithDB
                     ) OR (`bc_friends`.user2 = '$user_id'
                         AND user_id = `bc_friends`.user1
                     )";
-    }*/
+    }
     /////////////////////////////////////////////////////////////////////////////
     
     private function _get_filter_for_age($minAge, $maxAge)
@@ -782,34 +755,6 @@ class User extends EntityWithDB
             $res = true;
         }
         return $res;
-    }
-    /////////////////////////////////////////////////////////////////////////////
-    
-    public function find_by_nick($nick, $user_id)
-    {
-        $this->DBHandler->db->exec_query(
-            "SELECT `tmp_found_users`.*, IF(`bc_top`.user2 IS NULL, 0, 1) AS top
-            FROM
-                (SELECT `bc_users_info`.user_id, " . User::SQL_USER_DATA
-                    . ", loc.latitude AS lat, loc.longitude AS lng, "
-                    . $this->SQL_FILTER_ONLINE . "
-                FROM `bc_locations` AS loc, `bc_users_info`
-                WHERE `bc_users_info`.user_id = loc.user_id
-                    AND bc_users_info.nick LIKE '$nick%'
-                    AND bc_users_info.user_id NOT LIKE '$user_id'
-                ) `tmp_found_users`
-                LEFT JOIN `bc_top`
-                ON `bc_top`.user1 = '$user_id'
-                    AND `bc_top`.user2 = `tmp_found_users`.user_id"
-            . $this->get_limit_part() 
-        );
-        $res_rec = array();
-        foreach ($this->DBHandler->db->get_all_data() as $record)
-        {
-            $record['isOnline'] = $record['isOnline'] ? true : false;
-            $res_rec[] = $record;    
-        }
-        return $res_rec;
     }
     /////////////////////////////////////////////////////////////////////////////
 }
