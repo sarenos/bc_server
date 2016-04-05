@@ -752,26 +752,25 @@ class User extends EntityWithDB
             fwrite($ifp, base64_decode($photoB64 ));
 
 
-          //  $file = $_FILES['file']['tmp_name'];
+            //  $file = $_FILES['file']['tmp_name'];
             $app = 'zr9eaj';
             $secret = 'RknBYEneobLUQxFPfGGDOQa9XS2YgykG';
 
-            $sign = md5($app . file_get_contents($ifp) . $secret);
-            $url = 'https://i.onthe.io/upload.php?app=' . $app . '&s=' . $sign;
-            $post = [ 'file'=> new CURLFile($ifp) ];
-
-            $ch = curl_init($url);
+            $sign = md5($app . file_get_contents($url) . $secret);
+            $urlr = 'http://i.onthe.io/upload.php?app=' . $app . '&s=' . $sign;
+            $post = [ 'file'=> new CURLFile($url) ];
+            $ch = curl_init($urlr);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $image = json_decode(curl_exec($ch), 1);
-
+            $key = $image['key'];
             # save $image['key'] for later use
 
 
 
             fclose($ifp);
-            $this->DBHandler->db->exec_query("UPDATE bc_users_info SET photo = '".$image."' WHERE user_id = ".(string)@$Data['user_id']);
+            $this->DBHandler->db->exec_query("UPDATE bc_users_info SET photo = '".$key."' WHERE user_id = ".(string)@$Data['user_id']);
             return true;
         }
         throw new ExceptionProcessing(12);
