@@ -213,9 +213,9 @@ class User extends EntityWithDB
             return array('data' => null);
         }
         $this->DBHandler->db->exec_query("SELECT * FROM bc_users_info WHERE user_id LIKE '$user_id'");
-        foreach ($this->DBHandler->db->get_all_data() as $user_data)
-        {
-            $user_data['photo'] = $this->_get_existing_photo_path($user_data['user_id']);
+       foreach ($this->DBHandler->db->get_all_data() as $user_data)
+       {
+           $user_data[] = $user_data;
         }
         return array('data' => $user_data);
     }
@@ -767,7 +767,9 @@ class User extends EntityWithDB
             $key = $image['full_size'];
             # save $image['key'] for later use
 
-            fclose($ifp);
+            fclose($url);
+            unlink($url);
+          
             $this->DBHandler->db->exec_query("UPDATE bc_users_info SET photo = '".$key."' WHERE user_id = ".(string)@$Data['user_id']);
             return array('data' => array('photoUrl' => $key));
         }
