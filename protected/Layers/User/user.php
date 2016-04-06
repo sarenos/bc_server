@@ -764,14 +764,12 @@ class User extends EntityWithDB
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $image = json_decode(curl_exec($ch), 1);
-            $key = $image['key'];
+            $key = $image['full_size'];
             # save $image['key'] for later use
-
-
 
             fclose($ifp);
             $this->DBHandler->db->exec_query("UPDATE bc_users_info SET photo = '".$key."' WHERE user_id = ".(string)@$Data['user_id']);
-            return true;
+            return array('data' => array('photoUrl' => $key));
         }
         throw new ExceptionProcessing(12);
     }
