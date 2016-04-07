@@ -107,8 +107,7 @@ class Top extends EntityWithDB
 	private function _get_user_top_limit()
     {
            $this->DBHandler->db->exec_query(
-                "SELECT top_limit from bc_users_info where user_id = ".$this->_user1; 
-        );
+                "SELECT top_limit from bc_users_info where user_id = ".$this->_user1);
         foreach ($this->DBHandler->db->get_all_data() as $record)
         {
             $top_limit = $record['top_limit'];
