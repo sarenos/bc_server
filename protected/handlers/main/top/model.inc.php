@@ -18,6 +18,7 @@ class MainTopModel extends MainModel
     {
         $this->_set_users_post();
         $this->_Top->check_is_in_top();
+		$this->_Top->check_top_limit();
         $this->Result = $this->_Top->add_in_top();
     }
 

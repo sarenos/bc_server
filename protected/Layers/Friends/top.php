@@ -70,6 +70,14 @@ class Top extends EntityWithDB
             throw new ExceptionProcessing(50);
         }
     }
+	
+	    public function check_top_limit()
+    {
+        if ($this->_top_limit())
+        {
+            throw new ExceptionProcessing(50);
+        }
+    }
     /////////////////////////////////////////////////////////////////////////////
 
     public function add_in_top()
@@ -88,6 +96,12 @@ class Top extends EntityWithDB
         $this->Fields['user2']->set($this->_user2);
         $this->load_by_fields_list($this->_key_fields);
         return null != $this->Fields['dt_create']->get();
+    }
+	
+	private function _top_limit()
+    {
+        $this->Fields['user1']->set($this->_user1);
+        return 20 >= count($this->_load_by_user());
     }
     /////////////////////////////////////////////////////////////////////////////
 
