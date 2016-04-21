@@ -46,7 +46,7 @@ function set_stamp($stamp)
 
 function get_stamp()
 {
-     return strftime('%Y-%m-%d %H:%M:%S', $this-> get());
+     return strftime('%Y-%m-%d %H:%M:%S', strtotime($this-> get()));
 }
 ///////////////////////////////////////////////////////////////////////////
 
