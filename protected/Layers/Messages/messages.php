@@ -56,9 +56,10 @@ class Messages extends EntityWithDB
         $this->Fields['connection_id']->set($connection_id);
         $this->Fields['status']->set($this->_get_status_new());
         $this->Fields['message']->set($this->_Data['message']);
-        $this->Fields['dt_create']->now();
+		$this->Fields['dt_create']->now();
+        $date_time = $this->Fields['dt_create']->get_stamp();
         $this->DBHandler->insert();
-        return $this->Fields['id']->get();
+        return array('id' => $this->Fields['id']->get(), 'date_time' => $date_time);
     }
     /////////////////////////////////////////////////////////////////////////////
 
