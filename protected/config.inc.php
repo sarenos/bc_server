@@ -18,7 +18,7 @@ ob_start();
 
 define('DEV_MODE', false);
 
-date_default_timezone_set('Europe/Kiev');
+date_default_timezone_set('UTC');
 define('DOMAIN_ROOT', 'charity.privatbank.ua');
 define('SESSION_NAME', 'curex_rand');
 
