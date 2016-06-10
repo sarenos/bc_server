@@ -65,6 +65,10 @@ define('FILTER_MINAGE', 14);
 define('FILTER_MAXAGE', 99);
 define('FILTER_RADIUS', 5);
 
+/* filter validation min&max values */
+define('FILTER_VALID_RADIUS_MIN', 1);
+define('FILTER_VALID_RADIUS_MAX', 100);
+
 /* status online */
 define('STATUS_ONLINE_MINUTES_FRIEND', 10);
 

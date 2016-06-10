@@ -686,7 +686,9 @@ class User extends EntityWithDB
     
     private function _validate_filter_radius($radius)
     {
-        if (!is_numeric($radius) || (float)$radius < 1 || (float)$radius > 20)
+        if (!is_numeric($radius)
+                || (float)$radius < FILTER_VALID_RADIUS_MIN
+                || (float)$radius > FILTER_VALID_RADIUS_MAX)
         {
             throw new ExceptionProcessing(23);
         }
