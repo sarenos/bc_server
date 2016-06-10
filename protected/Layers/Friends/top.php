@@ -70,6 +70,14 @@ class Top extends EntityWithDB
             throw new ExceptionProcessing(50);
         }
     }
+	
+	    public function check_top_limit()
+    {
+        if ($this->_top_limit())
+        {
+            throw new ExceptionProcessing(52);
+        }
+    }
     /////////////////////////////////////////////////////////////////////////////
 
     public function add_in_top()
@@ -89,7 +97,24 @@ class Top extends EntityWithDB
         $this->load_by_fields_list($this->_key_fields);
         return null != $this->Fields['dt_create']->get();
     }
+	
+	private function _top_limit()
+    {
+        $this->Fields['user1']->set($this->_user1);
+        return $this->_get_user_top_limit() <= count($this->_load_by_user());
+    }
     /////////////////////////////////////////////////////////////////////////////
+	private function _get_user_top_limit()
+    {
+           $this->DBHandler->db->exec_query(
+                "SELECT top_limit from bc_users_info where user_id = ".$this->_user1);
+        foreach ($this->DBHandler->db->get_all_data() as $record)
+        {
+            $top_limit = $record['top_limit'];
+        }		
+        return $top_limit;
+    }
+	
 
     /*private function _return_err($message)
     {

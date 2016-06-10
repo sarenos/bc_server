@@ -53,12 +53,13 @@ class Messages extends EntityWithDB
         {
             throw new ExceptionProcessing(40);
         }
+		$date = date('Y-m-d H:i:s');
         $this->Fields['connection_id']->set($connection_id);
         $this->Fields['status']->set($this->_get_status_new());
         $this->Fields['message']->set($this->_Data['message']);
-        $this->Fields['dt_create']->now();
+		$this->Fields['dt_create']->set_value($date);
         $this->DBHandler->insert();
-        return $this->Fields['id']->get();
+        return array('id' => $this->Fields['id']->get(), 'date_time' => $date);
     }
     /////////////////////////////////////////////////////////////////////////////
 

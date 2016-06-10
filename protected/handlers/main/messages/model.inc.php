@@ -22,10 +22,10 @@ class MainMessagesModel extends MainModel
     {
         $this->_Connections->set_users((float)@$_POST['user_from'], (float)@$_POST['user_to']);
         $this->_User->inc_count_messages((float)@$_POST['user_to']);
-        $this->Result = array('id' =>
+        $this->Result = 
                     $this->_Messages
                                 ->set_data($_POST)
-                                ->send($this->_Connections->get_id_by_users()));
+                                ->send($this->_Connections->get_id_by_users());
     }
 
     public function action_read()
